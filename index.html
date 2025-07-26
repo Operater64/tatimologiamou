@@ -8,444 +8,453 @@
   <style>
     body { font-family: system-ui,sans-serif; margin:0; background:#e8f1fb; color:#183049;}
     h1 { text-align:center; font-weight:500; letter-spacing:1px; margin:25px 0 12px; color:#2062a9;}
-    .container { max-width:420px; margin:0 auto 32px; background:white; padding:22px 15px 26px; border-radius:20px;
-      box-shadow:0 4px 30px #2362a91c;}
-    .tabs { margin-top:14px; display:flex; border-bottom:2px solid #c1dafc; background:#f0f6fd;}
-    .tabs button {
-      flex:1; background:transparent; border:none; border-bottom:3px solid transparent; outline:none;
-      padding:12px 0 8px 0; font-size:1.3em; color:#185db0; display:flex; align-items:center; justify-content:center;
-      transition: border-color 0.2s, color 0.18s, background 0.18s; height:48px; position:relative; cursor:pointer;
+    .container {
+      max-width:420px; margin:0 auto 32px; background:white; padding:22px 15px 26px;
+      border-radius:20px; box-shadow:0 4px 30px #2362a91c;
     }
-    .tabs button.active { border-color:#3987ec; color:#2563bb; background:linear-gradient(to bottom,#e3eeff 60%,#f0f6fd);}
+    .tabs {
+      margin-top:14px; display:flex; border-bottom:2px solid #c1dafc; background:#f0f6fd;
+    }
+    .tabs button {
+      flex:1; background:transparent; border:none; border-bottom:3px solid transparent;
+      outline:none; padding:12px 0 8px 0; font-size:1.3em; color:#185db0;
+      display:flex; align-items:center; justify-content:center;
+      transition: border-color 0.2s, color 0.18s, background 0.18s;
+      height:48px; position:relative; cursor:pointer;
+    }
+    .tabs button.active {
+      border-color:#3987ec; color:#2563bb;
+      background:linear-gradient(to bottom,#e3eeff 60%,#f0f6fd);
+    }
     .tabs button:hover:not(.active) { background:#eaf4fb; color:#245fae;}
     .material-symbols-rounded { font-size:1.5em; }
-    @keyframes fadeIn {from{opacity:0;}to{opacity:1;}}
     .section { display:none; }
     .section.active { display:block; }
-    .video-wrap { position:relative; margin-top:15px; border-radius:15px; overflow:hidden; background:#6caef9; height:278px; }
+    .video-wrap {
+      position:relative; margin-top:15px; border-radius:15px; overflow:hidden; background:#6caef9; height:278px;
+    }
     video, canvas.qr-canvas { width:100%; height:100%; display:block; }
     canvas.qr-canvas { position:absolute; top:0; left:0; pointer-events:none; z-index:2;}
-    button#start-scan { width:100%; padding:13px; border:none; border-radius:11px; background: #3987ec;
-      color:white; font-size:1.06em; cursor:pointer; margin-top:10px; font-weight:600;
-      box-shadow:0 2px 10px #3987ec1c; transition: background 0.25s;}
-    button#start-scan:hover:not(:disabled) { background: #185db0;}
+    button#start-scan {
+      width:100%; padding:13px; border:none; border-radius:11px;
+      background:#3987ec; color:white; font-size:1.06em; cursor:pointer; margin-top:10px; font-weight:600;
+      box-shadow:0 2px 10px #3987ec1c; transition: background 0.25s;
+    }
+    button#start-scan:hover:not(:disabled) { background:#185db0;}
     button#start-scan:disabled { background:#aac4e7; cursor:not-allowed;}
-    .msg-status { text-align:center; margin:13px 0 3px 0; font-size:1em; color:#2362a9; min-height:36px; font-weight:500;}
+    .msg-status {
+      text-align:center; margin:13px 0 3px 0; font-size:1em; color:#2362a9; min-height:36px; font-weight:500;
+    }
     .msg-ok { color: #279a7c; }
     .msg-warn { color: #c53823; }
     .filter-short {
       display: flex; justify-content: center; gap: 6px; margin: 15px 0 6px 0; flex-wrap: wrap; align-items: center;
     }
     .filter-short label {
-      font-weight: 600; font-size: 0.9em; color: #185db0; user-select:none;
-      display: flex; align-items: center; gap: 4px;
+      font-weight: 600; font-size: 0.9em; color: #185db0;
+      user-select:none; display: flex; align-items: center; gap: 4px;
     }
     .filter-short select {
-      border: 1px solid #b3d0f2;
-      border-radius: 6px;
-      padding: 3px 6px;
-      font-size: 0.9em;
-      background: #fafbff;
-      color: #183049;
-      height: 28px;
-      min-width: 50px;
-      cursor: pointer;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      appearance: none;
+      border: 1px solid #b3d0f2; border-radius: 6px; padding: 3px 6px; font-size: 0.9em;
+      background: #fafbff; color: #183049; height: 28px; min-width: 50px;
+      cursor: pointer; -webkit-appearance: none; -moz-appearance: none; appearance: none;
     }
     .filter-short button {
-      background:#3987ec; border:none; color:white; font-weight:600; font-size:0.95em; padding: 6px 12px;
-      border-radius: 11px; cursor:pointer; box-shadow:0 2px 10px #3987ec1c;
-      transition: background 0.25s;
-      height: 30px;
-      user-select:none;
+      background:#3987ec; border:none; color:white; font-weight:600; font-size:0.95em;
+      padding: 6px 12px; border-radius: 11px; cursor:pointer;
+      box-shadow:0 2px 10px #3987ec1c; transition: background 0.25s;
+      height: 30px; user-select:none;
     }
-    .filter-short button:hover {
-      background:#185db0;
+    .filter-short button:hover { background:#185db0;}
+    .search-bar { margin: 0 0 8px 0;}
+    .search-bar input[type="search"] {
+      width: 99%; border-radius: 7px; border: 1px solid #b3d0f2; padding: 7px 8px;
+      font-size: 1em; color: #183049; box-sizing: border-box;
     }
     table {
       width:100%; border-collapse:collapse; margin-top:8px; font-size:0.99em; background:#f5f8fd;
     }
-    th,td {
-      padding:8px 4px; border-bottom:1px solid #d0e1fa; text-align:center;
-      vertical-align: middle;
+    th, td {
+      padding:8px 4px; border-bottom:1px solid #d0e1fa; text-align:center; vertical-align: middle;
     }
-    thead {
-      background:#3178ce; color:white;
+    thead { background:#3178ce; color:white; }
+    tbody tr { background:#fafdff;}
+    tbody tr:nth-child(even) { background: #e7f1fa;}
+    tbody tr:hover { background:#e2ecff;}
+    .editable-note {
+      width: 99%; min-width: 100px; max-width: 99vw;
+      min-height: 34px; max-height: 70px;
+      padding: 5px 7px; border: 1px solid #b3d0f2; border-radius: 7px; background: #fafbff;
+      font-size: 1.08em; font-family: inherit; resize: none; box-sizing: border-box;
+      overflow-y: auto; transition: box-shadow 0.15s; outline: none; cursor: text;
+      white-space: pre-wrap; word-wrap: break-word;
     }
-    tbody tr {
-      background:#fafdff;
+    .editable-note:focus { box-shadow: 0 0 0 2px #3178ce44; outline: none;}
+    button.delete-btn, button.export-btn {
+      background: #468ae5; color:white; padding:4px 9px; border:none; border-radius:7px;
+      font-weight:500; font-size:1em; cursor:pointer;
     }
-    tbody tr:nth-child(even) {
-      background: #e7f1fa;
-    }
-    tbody tr:hover {
-      background:#e2ecff;
-    }
-    .desc-input {
-      width:99%;
-      min-width:100px;
-      max-width:99vw;
-      border: 1px solid #b3d0f2;
-      border-radius: 7px;
-      padding: 5px 7px;
-      font-size: 1.08em;
-      font-family: inherit;
-      background: #fafbff;
-      resize: vertical;
-      min-height: 36px;
-      max-height: 90px;
-      box-sizing: border-box;
-      transition: box-shadow 0.17s;
-    }
-    .desc-input:focus {
-      box-shadow: 0 0 0 2px #3178ce44;
-      outline: none;
-    }
-    button.delete-btn,button.export-btn {
-      background: #468ae5; color:white; padding:4px 9px; border:none; border-radius:7px; font-weight:500; font-size:1em; cursor:pointer;
-    }
-    button.delete-btn:hover {
-      background: #2262b6;
-    }
-    button.export-btn {
-      background:#209ecc; margin:12px 0 0 0;
-    }
-    button.export-btn:hover {
-      background:#1879a0;
-    }
+    button.delete-btn:hover {background: #2262b6;}
+    button.export-btn { background:#209ecc; margin:12px 0 0 0;}
+    button.export-btn:hover { background:#1879a0;}
     .raw-data {
-      margin-top:13px; font-size:.95em; color:#2262b6; background:#e5eff7; padding:10px; border-radius:11px; max-height:85px; overflow-y:auto;
+      margin-top:13px; font-size:.95em; color:#2262b6;
+      background:#e5eff7; padding:10px; border-radius:11px;
+      max-height:85px; overflow-y:auto;
     }
     a.qrlink {
-      color:#3777b9; text-decoration:underline; cursor:pointer; font-weight:500; letter-spacing:.2px;
+      color:#3777b9; text-decoration:underline; cursor:pointer;
+      font-weight:500; letter-spacing:.2px;
     }
     @media (max-width:500px){
       .container {margin:10px auto;}
-      .filter-short {
-        flex-direction: column; align-items: stretch; gap: 8px;
+      .filter-short { flex-direction: column; align-items: stretch; gap: 8px;}
+      .filter-short select, .filter-short button, .search-bar input[type="search"] {
+        max-width: 100%; width: 100%; height: auto;
       }
-      .filter-short select, .filter-short button {
-        max-width: 100%;
-        width: 100%;
-        height: auto;
-      }
-      .filter-short label {
-        justify-content: flex-start;
-      }
+      .filter-short label { justify-content: flex-start; }
+    }
+    .no-results {
+      color: #c53823; text-align: center; font-size: 1em; font-weight: 500;
+      padding: 14px 0; background: #f9eeea; border-radius: 8px;
     }
   </style>
 </head>
 <body>
-<div class="container">
-  <h1>Τα τιμολόγιά μου 3.0</h1>
-  <div class="tabs">
-    <button id="tab-reader" class="active">
-      <span class="material-symbols-rounded">qr_code_scanner</span>
-    </button>
-    <button id="tab-table">
-      <span class="material-symbols-rounded">table</span>
-    </button>
-  </div>
-  <div class="section active" id="section-reader">
-    <button id="start-scan">
-      <span class="material-symbols-rounded" style="vertical-align:middle;margin-right:3px;">camera_alt</span>
-      Έναρξη σάρωσης
-    </button>
-    <div class="video-wrap" style="display:none;">
-      <video id="preview" autoplay muted playsinline></video>
-      <canvas class="qr-canvas" id="qr-canvas"></canvas>
+  <div class="container">
+    <h1>Τα τιμολόγιά μου 3.1</h1>
+    <div class="tabs">
+      <button id="tab-reader" class="active">
+        <span class="material-symbols-rounded">qr_code_scanner</span>
+      </button>
+      <button id="tab-table">
+        <span class="material-symbols-rounded">table</span>
+      </button>
     </div>
-    <div class="msg-status" id="msg-status"></div>
-    <div class="raw-data" id="raw-data">Δεν έχει διαβαστεί ακόμη QR.</div>
-  </div>
-  <div class="section" id="section-table">
-    <div class="filter-short" aria-label="Φίλτρο επιλογής διαστήματος">
-      <label for="start-month-select">Από
-        <select id="start-month-select">
-          <option value="">--</option>
-          <option value="01">Ιαν</option>
-          <option value="02">Φεβ</option>
-          <option value="03">Μαρ</option>
-          <option value="04">Απρ</option>
-          <option value="05">Μάι</option>
-          <option value="06">Ιουν</option>
-          <option value="07">Ιουλ</option>
-          <option value="08">Αυγ</option>
-          <option value="09">Σεπ</option>
-          <option value="10">Οκτ</option>
-          <option value="11">Νοε</option>
-          <option value="12">Δεκ</option>
-        </select>
-        /
-        <select id="start-year-select">
-          <option value="">--</option>
-          <option value="2021">2021</option>
-          <option value="2022">2022</option>
-          <option value="2023">2023</option>
-          <option value="2024" selected>2024</option>
-          <option value="2025">2025</option>
-          <option value="2026">2026</option>
-          <option value="2027">2027</option>
-          <option value="2028">2028</option>
-          <option value="2029">2029</option>
-          <option value="2030">2030</option>
-          <option value="2031">2031</option>
-          <option value="2032">2032</option>
-          <option value="2033">2033</option>
-          <option value="2034">2034</option>
-          <option value="2035">2035</option>
-        </select>
-      </label>
-      <label for="end-month-select">Έως
-        <select id="end-month-select">
-          <option value="">--</option>
-          <option value="01">Ιαν</option>
-          <option value="02">Φεβ</option>
-          <option value="03">Μαρ</option>
-          <option value="04">Απρ</option>
-          <option value="05">Μάι</option>
-          <option value="06">Ιουν</option>
-          <option value="07">Ιουλ</option>
-          <option value="08">Αυγ</option>
-          <option value="09">Σεπ</option>
-          <option value="10">Οκτ</option>
-          <option value="11">Νοε</option>
-          <option value="12">Δεκ</option>
-        </select>
-        /
-        <select id="end-year-select">
-          <option value="">--</option>
-          <option value="2021">2021</option>
-          <option value="2022">2022</option>
-          <option value="2023">2023</option>
-          <option value="2024" selected>2024</option>
-          <option value="2025">2025</option>
-          <option value="2026">2026</option>
-          <option value="2027">2027</option>
-          <option value="2028">2028</option>
-          <option value="2029">2029</option>
-          <option value="2030">2030</option>
-          <option value="2031">2031</option>
-          <option value="2032">2032</option>
-          <option value="2033">2033</option>
-          <option value="2034">2034</option>
-          <option value="2035">2035</option>
-        </select>
-      </label>
-      <button id="filter-btn">Φίλτρο</button>
+
+    <!-- Tab 1: QR Reader -->
+    <div class="section active" id="section-reader">
+      <button id="start-scan">
+        <span class="material-symbols-rounded" style="vertical-align: middle; margin-right: 3px;">camera_alt</span>
+        Έναρξη σάρωσης
+      </button>
+      <div class="video-wrap" style="display: none;">
+        <video id="preview" autoplay muted playsinline></video>
+        <canvas class="qr-canvas" id="qr-canvas"></canvas>
+      </div>
+      <div class="msg-status" id="msg-status"></div>
+      <div class="raw-data" id="raw-data">Δεν έχει διαβαστεί ακόμη QR.</div>
     </div>
-    <table id="main-table">
-      <thead>
-        <tr>
-          <th><span class="material-symbols-rounded">calendar_month</span></th>
-          <th><span class="material-symbols-rounded">link</span></th>
-          <th><span class="material-symbols-rounded">edit_note</span></th>
-          <th><span class="material-symbols-rounded">delete</span></th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-    <button class="export-btn" id="export-btn">
-      <span class="material-symbols-rounded" style="vertical-align:-4px;">download</span> Export σε CSV
-    </button>
+
+    <!-- Tab 2: Table -->
+    <div class="section" id="section-table">
+      <!-- Φίλτρο Διαστήματος -->
+      <div class="filter-short" aria-label="Φίλτρο επιλογής διαστήματος">
+        <label for="start-month-select">Από
+          <select id="start-month-select">
+            <option value="">--</option><option value="01">Ιαν</option><option value="02">Φεβ</option><option value="03">Μαρ</option><option value="04">Απρ</option><option value="05">Μάι</option><option value="06">Ιουν</option><option value="07">Ιουλ</option><option value="08">Αυγ</option><option value="09">Σεπ</option><option value="10">Οκτ</option><option value="11">Νοε</option><option value="12">Δεκ</option>
+          </select> /
+          <select id="start-year-select">
+            <option value="">--</option><option value="2021">2021</option><option value="2022">2022</option><option value="2023">2023</option><option value="2024" selected>2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option><option value="2031">2031</option><option value="2032">2032</option><option value="2033">2033</option><option value="2034">2034</option><option value="2035">2035</option>
+          </select>
+        </label>
+        <label for="end-month-select">Έως
+          <select id="end-month-select">
+            <option value="">--</option><option value="01">Ιαν</option><option value="02">Φεβ</option><option value="03">Μαρ</option><option value="04">Απρ</option><option value="05">Μάι</option><option value="06">Ιουν</option><option value="07">Ιουλ</option><option value="08">Αυγ</option><option value="09">Σεπ</option><option value="10">Οκτ</option><option value="11">Νοε</option><option value="12">Δεκ</option>
+          </select> /
+          <select id="end-year-select">
+            <option value="">--</option><option value="2021">2021</option><option value="2022">2022</option><option value="2023">2023</option><option value="2024" selected>2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option><option value="2031">2031</option><option value="2032">2032</option><option value="2033">2033</option><option value="2034">2034</option><option value="2035">2035</option>
+          </select>
+        </label>
+        <button id="filter-btn" aria-label="Εφαρμογή φίλτρου">Φίλτρο</button>
+      </div>
+      <!-- Αναζήτηση -->
+      <div class="search-bar">
+        <input type="search" id="search-text" placeholder="Αναζήτηση στη σημείωση..." aria-label="Αναζήτηση στη σημείωση" />
+      </div>
+      <table id="main-table">
+        <thead>
+          <tr>
+            <th><span class="material-symbols-rounded">calendar_month</span></th>
+            <th><span class="material-symbols-rounded">link</span></th>
+            <th><span class="material-symbols-rounded">edit_note</span></th>
+            <th><span class="material-symbols-rounded">delete</span></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <button class="export-btn" id="export-btn">
+        <span class="material-symbols-rounded" style="vertical-align: -4px">download</span>
+        Export σε CSV
+      </button>
+    </div>
   </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/jsqr"></script>
-<script>
-  const STORAGE_KEY = 'myinvoices_v1';
-  let invoices = [], scanning=false, stream=null, lastQRData='', activeTab='reader';
-  const tabs = {
-    reader: document.getElementById('tab-reader'),
-    table: document.getElementById('tab-table')
-  };
-  const sections = {
-    reader: document.getElementById('section-reader'),
-    table: document.getElementById('section-table')
-  };
-  const video = document.getElementById('preview'), videoWrap = document.querySelector('.video-wrap'), qrCanvas = document.getElementById('qr-canvas');
-  const startBtn = document.getElementById('start-scan'), msgStatus = document.getElementById('msg-status'), rawDataDiv = document.getElementById('raw-data');
-  const tableBody = document.getElementById('main-table').getElementsByTagName('tbody')[0], exportBtn = document.getElementById('export-btn');
-  const startMonthSelect = document.getElementById('start-month-select');
-  const startYearSelect = document.getElementById('start-year-select');
-  const endMonthSelect = document.getElementById('end-month-select');
-  const endYearSelect = document.getElementById('end-year-select');
-  const filterBtn = document.getElementById('filter-btn');
-  let filteredInvoices = [];
-  Object.entries(tabs).forEach(([k,btn])=>{
-    btn.onclick=()=>switchTab(k);
-  });
-  function switchTab(tab){
-    activeTab=tab;
-    Object.entries(sections).forEach(([k,s])=>s.classList.toggle('active',tab===k));
-    Object.entries(tabs).forEach(([k,btn])=>btn.classList.toggle('active',tab===k));
-    if(tab!=='reader' && scanning) stopScanning();
-    if(tab==='table'){
-      applyFilterAndRender();
+  <script src="https://cdn.jsdelivr.net/npm/jsqr"></script>
+  <script>
+    const STORAGE_KEY = "myinvoices_v1";
+    let invoices = [],
+      scanning = false,
+      stream = null,
+      lastQRData = "",
+      activeTab = "reader";
+
+    const tabs = {
+      reader: document.getElementById("tab-reader"),
+      table: document.getElementById("tab-table"),
+    };
+    const sections = {
+      reader: document.getElementById("section-reader"),
+      table: document.getElementById("section-table"),
+    };
+    const video = document.getElementById("preview"),
+      videoWrap = document.querySelector(".video-wrap"),
+      qrCanvas = document.getElementById("qr-canvas");
+    const startBtn = document.getElementById("start-scan"),
+      msgStatus = document.getElementById("msg-status"),
+      rawDataDiv = document.getElementById("raw-data");
+    const tableBody = document
+      .getElementById("main-table")
+      .getElementsByTagName("tbody")[0];
+    const exportBtn = document.getElementById("export-btn");
+
+    const startMonthSelect = document.getElementById("start-month-select");
+    const startYearSelect = document.getElementById("start-year-select");
+    const endMonthSelect = document.getElementById("end-month-select");
+    const endYearSelect = document.getElementById("end-year-select");
+    const filterBtn = document.getElementById("filter-btn");
+    const searchInput = document.getElementById("search-text");
+    let filteredInvoices = [];
+
+    Object.entries(tabs).forEach(([k, btn]) => {
+      btn.onclick = () => switchTab(k);
+    });
+    function switchTab(tab) {
+      activeTab = tab;
+      Object.entries(sections).forEach(([k, s]) => s.classList.toggle("active", tab === k));
+      Object.entries(tabs).forEach(([k, btn]) => btn.classList.toggle("active", tab === k));
+      if (tab !== "reader" && scanning) stopScanning();
+      if (tab === "table") applyFilterAndRender();
     }
-  }
-  function loadStorage(){
-    invoices=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
-  }
-  function saveStorage(){
-    localStorage.setItem(STORAGE_KEY,JSON.stringify(invoices));
-  }
-  startBtn.onclick = async ()=>{
-    startBtn.disabled=true; msgStatus.textContent='Άνοιγμα κάμερας...';
-    try{
-      stream=await navigator.mediaDevices.getUserMedia({
-        video:{ facingMode:'environment', width:{ideal:1280}, height:{ideal:720} }
-      });
-      video.srcObject=stream; scanning=true; videoWrap.style.display='block'; scan();
-      startBtn.textContent='Σταμάτημα σάρωσης'; startBtn.disabled=false; startBtn.onclick=stopScanning;
-    }catch(e){
-      msgStatus.textContent='Δεν βρέθηκε κάμερα ή δεν δόθηκε άδεια.'; startBtn.disabled=false;
+    function loadStorage() {
+      invoices = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
     }
-  };
-  function stopScanning(){
-    scanning=false; if(stream)stream.getTracks().forEach(t=>t.stop());
-    videoWrap.style.display='none';msgStatus.textContent='Σάρωση σταματημένη.';lastQRData='';
-    startBtn.textContent='Έναρξη σάρωσης'; startBtn.onclick=startScan;
-  }
-  function startScan(){ location.reload(); }
-  function drawOutline(location,ctx){
-    if(!location)return; ctx.save(); ctx.beginPath();
-    ctx.moveTo(location.topLeftCorner.x,location.topLeftCorner.y);
-    ctx.lineTo(location.topRightCorner.x,location.topRightCorner.y);
-    ctx.lineTo(location.bottomRightCorner.x,location.bottomRightCorner.y);
-    ctx.lineTo(location.bottomLeftCorner.x,location.bottomLeftCorner.y);
-    ctx.closePath(); ctx.lineWidth=3; ctx.strokeStyle="#38ef7d"; ctx.shadowColor="#3fb5f8"; ctx.shadowBlur=7; ctx.stroke(); ctx.restore();
-  }
-  function scan(){
-    if(!scanning)return;
-    if(video.readyState!==video.HAVE_ENOUGH_DATA){ setTimeout(scan,50);return;}
-    qrCanvas.width=video.videoWidth||400; qrCanvas.height=video.videoHeight||300;
-    const ctx=qrCanvas.getContext('2d'); ctx.clearRect(0,0,qrCanvas.width,qrCanvas.height);
-    const tmpCanvas=document.createElement('canvas'); tmpCanvas.width=qrCanvas.width; tmpCanvas.height=qrCanvas.height;
-    const tmpCtx=tmpCanvas.getContext('2d');
-    tmpCtx.drawImage(video,0,0,tmpCanvas.width,tmpCanvas.height);
-    const imageData=tmpCtx.getImageData(0,0,tmpCanvas.width,tmpCanvas.height);
-    const code=jsQR(imageData.data,tmpCanvas.width,tmpCanvas.height);
-    if(code){
-      drawOutline(code.location,ctx); msgStatus.textContent='QR εντοπίστηκε!'; rawDataDiv.textContent=code.data;
-      if(code.data!==lastQRData){
-        lastQRData=code.data;
-        const now=(new Date()).toISOString().slice(0, 19).replace('T', ' ');
-        let urlVal = (/^https?:\/\//.test(code.data.trim()) ? code.data.trim() : '');
-        invoices.unshift({
-          date: now,
-          link: urlVal,
-          raw: code.data,
-          note: ''
+    function saveStorage() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(invoices));
+    }
+    startBtn.onclick = async () => {
+      startBtn.disabled = true;
+      msgStatus.textContent = "Άνοιγμα κάμερας...";
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 } },
         });
-        saveStorage();
-        if(activeTab==='table') applyFilterAndRender();
+        video.srcObject = stream;
+        scanning = true;
+        videoWrap.style.display = "block";
+        scan();
+        startBtn.textContent = "Σταμάτημα σάρωσης";
+        startBtn.disabled = false;
+        startBtn.onclick = stopScanning;
+      } catch (e) {
+        msgStatus.textContent = "Δεν βρέθηκε κάμερα ή δεν δόθηκε άδεια.";
+        startBtn.disabled = false;
       }
-    }else{
-      ctx.clearRect(0,0,qrCanvas.width,qrCanvas.height);
-      msgStatus.textContent='Δεν βρέθηκε QR – Σάρωση...';
+    };
+    function stopScanning() {
+      scanning = false;
+      if (stream) stream.getTracks().forEach((t) => t.stop());
+      videoWrap.style.display = "none";
+      msgStatus.textContent = "Σάρωση σταματημένη.";
+      lastQRData = "";
+      startBtn.textContent = "Έναρξη σάρωσης";
+      startBtn.onclick = startScan;
     }
-    setTimeout(scan,50);
-  }
-  function getMonthYearString(monthSelect, yearSelect){
-    const m = monthSelect.value;
-    const y = yearSelect.value;
-    if(!m || !y) return '';
-    return y+'-'+(m.length===1 ? '0'+m : m);
-  }
-  function filterInvoicesByMonthRange(invoices, startMonthYear, endMonthYear){
-    if(!startMonthYear && !endMonthYear) return invoices;
-    return invoices.filter(inv=>{
-      const dateVal = inv.date ? inv.date.slice(0,7) : '';
-      if(!dateVal) return false;
-      if(startMonthYear && dateVal < startMonthYear) return false;
-      if(endMonthYear && dateVal > endMonthYear) return false;
-      return true;
-    });
-  }
-  function renderTable(){
-    if(activeTab!=='table') return;
-    tableBody.innerHTML='';
-    filteredInvoices.forEach((r,idx)=>{
-      let tr=document.createElement('tr');
-      const linkCell = r.link ?
-        `<a href="${r.link}" target="_blank" class="qrlink">${"Link"}</a>` : '';
-      tr.innerHTML = `<td>${r.date||''}</td>
-      <td>${linkCell}</td>
-      <td>
-        <textarea class="desc-input" rows="2" data-idx="${idx}">${r.note ? r.note.replace(/"/g,'&quot;') : ''}</textarea>
-      </td>
-      <td>
-        <button class="delete-btn" data-idx="${idx}"><span class="material-symbols-rounded" style="vertical-align:middle;">delete</span></button>
-      </td>`;
-      tableBody.appendChild(tr);
-    });
-  }
-  function applyFilterAndRender(){
-    const startMonthYear = getMonthYearString(startMonthSelect, startYearSelect);
-    const endMonthYear = getMonthYearString(endMonthSelect, endYearSelect);
-    filteredInvoices = filterInvoicesByMonthRange(invoices, startMonthYear, endMonthYear);
-    renderTable();
-  }
-  filterBtn.onclick = () => {
-    applyFilterAndRender();
-  };
-  document.addEventListener('input',function(e){
-    if(!e.target.classList.contains('desc-input'))return;
-    const idx=Number(e.target.dataset.idx), val=e.target.value;
-    if(filteredInvoices[idx]){
-      const inv = filteredInvoices[idx];
-      const mainIdx = invoices.findIndex(i=>i.date===inv.date && i.raw===inv.raw && i.link===inv.link);
-      if(mainIdx>=0){
-        invoices[mainIdx].note = val;
-        saveStorage();
-        applyFilterAndRender();
+    function startScan() {
+      location.reload();
+    }
+    function drawOutline(location, ctx) {
+      if (!location) return;
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(location.topLeftCorner.x, location.topLeftCorner.y);
+      ctx.lineTo(location.topRightCorner.x, location.topRightCorner.y);
+      ctx.lineTo(location.bottomRightCorner.x, location.bottomRightCorner.y);
+      ctx.lineTo(location.bottomLeftCorner.x, location.bottomLeftCorner.y);
+      ctx.closePath();
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = "#38ef7d";
+      ctx.shadowColor = "#3fb5f8";
+      ctx.shadowBlur = 7;
+      ctx.stroke();
+      ctx.restore();
+    }
+    function scan() {
+      if (!scanning) return;
+      if (video.readyState !== video.HAVE_ENOUGH_DATA) {
+        setTimeout(scan, 50);
+        return;
       }
-    }
-  });
-  document.addEventListener('click',function(e){
-    if(e.target.closest('button.delete-btn')){
-      const btn = e.target.closest('button.delete-btn');
-      const idx=Number(btn.dataset.idx);
-      if(filteredInvoices[idx]){
-        const inv = filteredInvoices[idx];
-        const mainIdx = invoices.findIndex(i=>i.date===inv.date && i.raw===inv.raw && i.link===inv.link);
-        if(mainIdx>=0){
-          invoices.splice(mainIdx,1);
+      qrCanvas.width = video.videoWidth || 400;
+      qrCanvas.height = video.videoHeight || 300;
+      const ctx = qrCanvas.getContext("2d");
+      ctx.clearRect(0, 0, qrCanvas.width, qrCanvas.height);
+      const tmpCanvas = document.createElement("canvas");
+      tmpCanvas.width = qrCanvas.width;
+      tmpCanvas.height = qrCanvas.height;
+      const tmpCtx = tmpCanvas.getContext("2d");
+      tmpCtx.drawImage(video, 0, 0, tmpCanvas.width, tmpCanvas.height);
+      const imageData = tmpCtx.getImageData(0, 0, tmpCanvas.width, tmpCanvas.height);
+      const code = jsQR(imageData.data, tmpCanvas.width, tmpCanvas.height);
+      if (code) {
+        drawOutline(code.location, ctx);
+        msgStatus.textContent = "QR εντοπίστηκε!";
+        rawDataDiv.textContent = code.data;
+        if (code.data !== lastQRData) {
+          lastQRData = code.data;
+          const now = new Date().toISOString().slice(0, 19).replace("T", " ");
+          let urlVal = /^https?:\/\//.test(code.data.trim()) ? code.data.trim() : "";
+          invoices.unshift({
+            date: now,
+            link: urlVal,
+            raw: code.data,
+            note: "",
+          });
           saveStorage();
-          applyFilterAndRender();
+          if (activeTab === "table") applyFilterAndRender();
+        }
+      } else {
+        ctx.clearRect(0, 0, qrCanvas.width, qrCanvas.height);
+        msgStatus.textContent = "Δεν βρέθηκε QR – Σάρωση...";
+      }
+      setTimeout(scan, 50);
+    }
+    function getMonthYearString(monthSelect, yearSelect) {
+      const m = monthSelect.value || monthSelect;
+      const y = yearSelect.value || yearSelect;
+      if (!m || !y) return "";
+      return y + "-" + (m.length === 1 ? "0" + m : m);
+    }
+    function filterInvoicesByMonthRange(invoices, startMonthYear, endMonthYear) {
+      if (!startMonthYear && !endMonthYear) return invoices;
+      return invoices.filter((inv) => {
+        const dateVal = inv.date ? inv.date.slice(0, 7) : "";
+        if (!dateVal) return false;
+        if (startMonthYear && dateVal < startMonthYear) return false;
+        if (endMonthYear && dateVal > endMonthYear) return false;
+        return true;
+      });
+    }
+    function escapeHTML(text) {
+      if(!text) return "";
+      return text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+    }
+    function renderTable() {
+      if (activeTab !== "table") return;
+      tableBody.innerHTML = "";
+      if(filteredInvoices.length === 0) {
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = 4;
+        td.className = "no-results";
+        td.textContent = "Δεν βρέθηκαν εγγραφές για την αναζήτηση";
+        tr.appendChild(td);
+        tableBody.appendChild(tr);
+        return;
+      }
+      filteredInvoices.forEach((r, idx) => {
+        const tr = document.createElement("tr");
+        const linkCell = r.link ? `<a href="${r.link}" target="_blank" class="qrlink">Link</a>` : "";
+        tr.innerHTML = `<td>${r.date || ""}</td>
+          <td>${linkCell}</td>
+          <td>
+            <div contenteditable="true" class="editable-note" data-idx="${idx}">${escapeHTML(r.note || "")}</div>
+          </td>
+          <td>
+            <button class="delete-btn" data-idx="${idx}">
+              <span class="material-symbols-rounded" style="vertical-align:middle;">delete</span>
+            </button>
+          </td>`;
+        tableBody.appendChild(tr);
+      });
+    }
+    function applyFilterAndRender() {
+      const searchVal = (searchInput.value || "").trim().toLowerCase();
+      const startMonthYear = getMonthYearString(startMonthSelect, startYearSelect);
+      const endMonthYear = getMonthYearString(endMonthSelect, endYearSelect);
+      if (!searchVal && !startMonthYear && !endMonthYear) {
+        filteredInvoices = invoices.slice();
+      } else if (searchVal) {
+        filteredInvoices = invoices.filter(inv =>
+          (inv.note || "").toLowerCase().includes(searchVal)
+        );
+      } else {
+        filteredInvoices = filterInvoicesByMonthRange(invoices, startMonthYear, endMonthYear);
+      }
+      renderTable();
+    }
+    filterBtn.onclick = () => { applyFilterAndRender(); };
+    searchInput.addEventListener("input", () => { applyFilterAndRender(); });
+    document.addEventListener("input", function (e) {
+      if (!e.target.classList.contains("editable-note")) return;
+      const idx = Number(e.target.dataset.idx);
+      const val = e.target.innerText;
+      if (filteredInvoices[idx]) {
+        const inv = filteredInvoices[idx];
+        const mainIdx = invoices.findIndex(
+          (i) => i.date === inv.date && i.raw === inv.raw && i.link === inv.link
+        );
+        if (mainIdx >= 0) {
+          invoices[mainIdx].note = val;
+          saveStorage();
         }
       }
-    }
-  });
-  exportBtn.onclick = function() {
-    if(filteredInvoices.length===0){
-      alert('Δεν υπάρχουν καταχωρίσεις για εξαγωγή με το τρέχον φίλτρο.');
-      return;
-    }
-    let csv='Ημερομηνία,Link,Σημείωση,Raw QR\n';
-    filteredInvoices.forEach(r=>{
-      let link = r.link || '';
-      let note = r.note ? r.note.replace(/"/g,'""') : '';
-      let raw = r.raw ? r.raw.replace(/"/g,'""') : '';
-      csv+='"'+[r.date,link,note,raw].join('","')+'"\n';
     });
-    const blob = new Blob([csv], {type: 'text/csv'});
-    const url = URL.createObjectURL(blob);
-    const a=document.createElement('a');
-    a.href=url;
-    a.download='timologia.csv';
-    a.click();
-    setTimeout(()=>URL.revokeObjectURL(url), 300);
-  };
-  window.addEventListener('load',()=>{
-    loadStorage();
-    filteredInvoices = invoices.slice();
-    startMonthSelect.value = '01'; startYearSelect.value = '2024';
-    endMonthSelect.value = '12'; endYearSelect.value = '2024';
-    applyFilterAndRender();
-  });
-</script>
+    document.addEventListener("click", function (e) {
+      if (e.target.closest("button.delete-btn")) {
+        const btn = e.target.closest("button.delete-btn");
+        const idx = Number(btn.dataset.idx);
+        if (filteredInvoices[idx]) {
+          const inv = filteredInvoices[idx];
+          const mainIdx = invoices.findIndex(
+            (i) => i.date === inv.date && i.raw === inv.raw && i.link === inv.link
+          );
+          if (mainIdx >= 0) {
+            invoices.splice(mainIdx, 1);
+            saveStorage();
+            applyFilterAndRender();
+          }
+        }
+      }
+    });
+    exportBtn.onclick = function () {
+      if (filteredInvoices.length === 0) {
+        alert("Δεν υπάρχουν καταχωρίσεις για εξαγωγή με το τρέχον φίλτρο.");
+        return;
+      }
+      let csv = "Ημερομηνία,Link,Σημείωση,Raw QR\n";
+      filteredInvoices.forEach((r) => {
+        let link = r.link || "";
+        let note = r.note ? r.note.replace(/"/g, '""') : "";
+        let raw = r.raw ? r.raw.replace(/"/g, '""') : "";
+        csv += '"' + [r.date, link, note, raw].join('","') + '"\n';
+      });
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "timologia.csv";
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 300);
+    };
+    window.addEventListener("load", () => {
+      loadStorage();
+      filteredInvoices = invoices.slice();
+      startMonthSelect.value = "01";
+      startYearSelect.value = "2024";
+      endMonthSelect.value = "12";
+      endYearSelect.value = "2024";
+      applyFilterAndRender();
+    });
+  </script>
 </body>
 </html>
