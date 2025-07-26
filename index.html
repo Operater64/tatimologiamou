@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <title>Τα τιμολόγιά μου</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <!-- Google Icons (Material Symbols) -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,300,1,0">
   <style>
     body { font-family: system-ui,sans-serif; margin:0; background:#e8f1fb; color:#183049;}
@@ -20,18 +19,9 @@
     .tabs button.active { border-color:#3987ec; color:#2563bb; background:linear-gradient(to bottom,#e3eeff 60%,#f0f6fd);}
     .tabs button:hover:not(.active) { background:#eaf4fb; color:#245fae;}
     .material-symbols-rounded { font-size:1.5em; }
-    .tabs button[title]:hover::after, .tabs button[title]:focus::after {
-      content: attr(title);
-      position: absolute; top:52px; left:50%; transform:translateX(-50%);
-      background:#185db0ea; color:white; font-size:0.96em; border-radius:7px; padding:4px 11px;
-      white-space: nowrap; pointer-events: none;
-      box-shadow:0 1px 6px #1b417777; z-index:80;
-      animation: fadeIn 0.25s;
-    }
     @keyframes fadeIn {from{opacity:0;}to{opacity:1;}}
     .section { display:none; }
     .section.active { display:block; }
-    /* QR UI */
     .video-wrap { position:relative; margin-top:15px; border-radius:15px; overflow:hidden; background:#6caef9; height:278px; }
     video, canvas.qr-canvas { width:100%; height:100%; display:block; }
     canvas.qr-canvas { position:absolute; top:0; left:0; pointer-events:none; z-index:2;}
@@ -43,65 +33,121 @@
     .msg-status { text-align:center; margin:13px 0 3px 0; font-size:1em; color:#2362a9; min-height:36px; font-weight:500;}
     .msg-ok { color: #279a7c; }
     .msg-warn { color: #c53823; }
-    /* Table, fields */
-    .filter-container {
-      display: flex; justify-content: center; gap: 10px; margin: 15px 0 5px 0; flex-wrap: wrap;
+    .filter-short {
+      display: flex; justify-content: center; gap: 6px; margin: 15px 0 6px 0; flex-wrap: wrap; align-items: center;
     }
-    .filter-container label {
-      font-weight: 600; font-size: 0.9em; color: #185db0; align-self: center;
+    .filter-short label {
+      font-weight: 600; font-size: 0.9em; color: #185db0; user-select:none;
+      display: flex; align-items: center; gap: 4px;
     }
-    .filter-container input[type=month] {
-      border: 1px solid #b3d0f2; border-radius: 6px; padding: 5px 8px; font-size: 1em;
-      background:#fafbff;
-      color:#183049;
-      max-width: 140px;
+    .filter-short select {
+      border: 1px solid #b3d0f2;
+      border-radius: 6px;
+      padding: 3px 6px;
+      font-size: 0.9em;
+      background: #fafbff;
+      color: #183049;
+      height: 28px;
+      min-width: 50px;
+      cursor: pointer;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
     }
-    .filter-container button {
-      background:#3987ec; border:none; color:white; font-weight:600; font-size:1em; padding: 7px 14px;
+    .filter-short button {
+      background:#3987ec; border:none; color:white; font-weight:600; font-size:0.95em; padding: 6px 12px;
       border-radius: 11px; cursor:pointer; box-shadow:0 2px 10px #3987ec1c;
       transition: background 0.25s;
+      height: 30px;
+      user-select:none;
     }
-    .filter-container button:hover {
+    .filter-short button:hover {
       background:#185db0;
     }
-
-    table { width:100%; border-collapse:collapse; margin-top:8px; font-size:0.99em; background:#f5f8fd;}
-    th,td { padding:8px 4px; border-bottom:1px solid #d0e1fa; text-align:center; }
-    thead { background:#3178ce; color:white; }
-    tbody tr { background:#fafdff;}
-    tbody tr:nth-child(even) { background: #e7f1fa;}
-    tbody tr:hover { background:#e2ecff;}
-    .desc-input { width:92%; border:1px solid #b3d0f2; border-radius:7px; padding:2.5px 5px; font-size:1em; background:#fafbff;}
-    button.delete-btn,button.export-btn { background: #468ae5; color:white; padding:4px 9px; border:none; border-radius:7px; font-weight:500; font-size:1em; cursor:pointer; }
-    button.delete-btn:hover { background: #2262b6;}
-    button.export-btn { background:#209ecc; margin:12px 0 0 0;}
-    button.export-btn:hover { background:#1879a0;}
-    .raw-data { margin-top:13px; font-size:.95em; color:#2262b6; background:#e5eff7; padding:10px; border-radius:11px; max-height:85px; overflow-y:auto;}
-    a.qrlink { color:#3777b9; text-decoration:underline; cursor:pointer; font-weight:500; letter-spacing:.2px;}
-    @media (max-width:500px){ 
-      .container{margin:10px auto;} 
-      .filter-container {
-        flex-direction: column; align-items: stretch; gap: 10px;
+    table {
+      width:100%; border-collapse:collapse; margin-top:8px; font-size:0.99em; background:#f5f8fd;
+    }
+    th,td {
+      padding:8px 4px; border-bottom:1px solid #d0e1fa; text-align:center;
+      vertical-align: middle;
+    }
+    thead {
+      background:#3178ce; color:white;
+    }
+    tbody tr {
+      background:#fafdff;
+    }
+    tbody tr:nth-child(even) {
+      background: #e7f1fa;
+    }
+    tbody tr:hover {
+      background:#e2ecff;
+    }
+    .desc-input {
+      width:99%;
+      min-width:100px;
+      max-width:99vw;
+      border: 1px solid #b3d0f2;
+      border-radius: 7px;
+      padding: 5px 7px;
+      font-size: 1.08em;
+      font-family: inherit;
+      background: #fafbff;
+      resize: vertical;
+      min-height: 36px;
+      max-height: 90px;
+      box-sizing: border-box;
+      transition: box-shadow 0.17s;
+    }
+    .desc-input:focus {
+      box-shadow: 0 0 0 2px #3178ce44;
+      outline: none;
+    }
+    button.delete-btn,button.export-btn {
+      background: #468ae5; color:white; padding:4px 9px; border:none; border-radius:7px; font-weight:500; font-size:1em; cursor:pointer;
+    }
+    button.delete-btn:hover {
+      background: #2262b6;
+    }
+    button.export-btn {
+      background:#209ecc; margin:12px 0 0 0;
+    }
+    button.export-btn:hover {
+      background:#1879a0;
+    }
+    .raw-data {
+      margin-top:13px; font-size:.95em; color:#2262b6; background:#e5eff7; padding:10px; border-radius:11px; max-height:85px; overflow-y:auto;
+    }
+    a.qrlink {
+      color:#3777b9; text-decoration:underline; cursor:pointer; font-weight:500; letter-spacing:.2px;
+    }
+    @media (max-width:500px){
+      .container {margin:10px auto;}
+      .filter-short {
+        flex-direction: column; align-items: stretch; gap: 8px;
       }
-      .filter-container input[type=month], .filter-container button {
+      .filter-short select, .filter-short button {
         max-width: 100%;
+        width: 100%;
+        height: auto;
+      }
+      .filter-short label {
+        justify-content: flex-start;
       }
     }
   </style>
 </head>
 <body>
 <div class="container">
-  <h1>Τα τιμολόγιά μου 2.0</h1>
+  <h1>Τα τιμολόγιά μου 3.0</h1>
   <div class="tabs">
-    <button id="tab-reader" class="active" title="Σάρωση QR">
+    <button id="tab-reader" class="active">
       <span class="material-symbols-rounded">qr_code_scanner</span>
     </button>
-    <button id="tab-table" title="Δυναμικός Πίνακας">
+    <button id="tab-table">
       <span class="material-symbols-rounded">table</span>
     </button>
   </div>
-
-  <!-- Tab 1: QR Reader -->
   <div class="section active" id="section-reader">
     <button id="start-scan">
       <span class="material-symbols-rounded" style="vertical-align:middle;margin-right:3px;">camera_alt</span>
@@ -112,27 +158,91 @@
       <canvas class="qr-canvas" id="qr-canvas"></canvas>
     </div>
     <div class="msg-status" id="msg-status"></div>
-    <div class="raw-data" id="raw-data" title="Raw data τελευταίου QR">Δεν έχει διαβαστεί ακόμη QR.</div>
+    <div class="raw-data" id="raw-data">Δεν έχει διαβαστεί ακόμη QR.</div>
   </div>
-
-  <!-- Tab 2: Table -->
   <div class="section" id="section-table">
-    <!-- Filter controls -->
-    <div class="filter-container">
-      <label for="start-month">Από:</label>
-      <input type="month" id="start-month" value="">
-      <label for="end-month">Έως:</label>
-      <input type="month" id="end-month" value="">
-      <button id="filter-btn" title="Εφαρμογή φίλτρου">Εφαρμογή φίλτρου</button>
+    <div class="filter-short" aria-label="Φίλτρο επιλογής διαστήματος">
+      <label for="start-month-select">Από
+        <select id="start-month-select">
+          <option value="">--</option>
+          <option value="01">Ιαν</option>
+          <option value="02">Φεβ</option>
+          <option value="03">Μαρ</option>
+          <option value="04">Απρ</option>
+          <option value="05">Μάι</option>
+          <option value="06">Ιουν</option>
+          <option value="07">Ιουλ</option>
+          <option value="08">Αυγ</option>
+          <option value="09">Σεπ</option>
+          <option value="10">Οκτ</option>
+          <option value="11">Νοε</option>
+          <option value="12">Δεκ</option>
+        </select>
+        /
+        <select id="start-year-select">
+          <option value="">--</option>
+          <option value="2021">2021</option>
+          <option value="2022">2022</option>
+          <option value="2023">2023</option>
+          <option value="2024" selected>2024</option>
+          <option value="2025">2025</option>
+          <option value="2026">2026</option>
+          <option value="2027">2027</option>
+          <option value="2028">2028</option>
+          <option value="2029">2029</option>
+          <option value="2030">2030</option>
+          <option value="2031">2031</option>
+          <option value="2032">2032</option>
+          <option value="2033">2033</option>
+          <option value="2034">2034</option>
+          <option value="2035">2035</option>
+        </select>
+      </label>
+      <label for="end-month-select">Έως
+        <select id="end-month-select">
+          <option value="">--</option>
+          <option value="01">Ιαν</option>
+          <option value="02">Φεβ</option>
+          <option value="03">Μαρ</option>
+          <option value="04">Απρ</option>
+          <option value="05">Μάι</option>
+          <option value="06">Ιουν</option>
+          <option value="07">Ιουλ</option>
+          <option value="08">Αυγ</option>
+          <option value="09">Σεπ</option>
+          <option value="10">Οκτ</option>
+          <option value="11">Νοε</option>
+          <option value="12">Δεκ</option>
+        </select>
+        /
+        <select id="end-year-select">
+          <option value="">--</option>
+          <option value="2021">2021</option>
+          <option value="2022">2022</option>
+          <option value="2023">2023</option>
+          <option value="2024" selected>2024</option>
+          <option value="2025">2025</option>
+          <option value="2026">2026</option>
+          <option value="2027">2027</option>
+          <option value="2028">2028</option>
+          <option value="2029">2029</option>
+          <option value="2030">2030</option>
+          <option value="2031">2031</option>
+          <option value="2032">2032</option>
+          <option value="2033">2033</option>
+          <option value="2034">2034</option>
+          <option value="2035">2035</option>
+        </select>
+      </label>
+      <button id="filter-btn">Φίλτρο</button>
     </div>
-
     <table id="main-table">
       <thead>
         <tr>
-          <th><span class="material-symbols-rounded" title="Ημερομηνία">calendar_month</span></th>
-          <th><span class="material-symbols-rounded" title="Link (QR)">link</span></th>
-          <th><span class="material-symbols-rounded" title="Σημείωση">edit_note</span></th>
-          <th><span class="material-symbols-rounded" title="Ενέργειες">delete</span></th>
+          <th><span class="material-symbols-rounded">calendar_month</span></th>
+          <th><span class="material-symbols-rounded">link</span></th>
+          <th><span class="material-symbols-rounded">edit_note</span></th>
+          <th><span class="material-symbols-rounded">delete</span></th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -144,11 +254,8 @@
 </div>
 <script src="https://cdn.jsdelivr.net/npm/jsqr"></script>
 <script>
-  // Data model & storage
   const STORAGE_KEY = 'myinvoices_v1';
   let invoices = [], scanning=false, stream=null, lastQRData='', activeTab='reader';
-
-  // Elements
   const tabs = {
     reader: document.getElementById('tab-reader'),
     table: document.getElementById('tab-table')
@@ -160,15 +267,12 @@
   const video = document.getElementById('preview'), videoWrap = document.querySelector('.video-wrap'), qrCanvas = document.getElementById('qr-canvas');
   const startBtn = document.getElementById('start-scan'), msgStatus = document.getElementById('msg-status'), rawDataDiv = document.getElementById('raw-data');
   const tableBody = document.getElementById('main-table').getElementsByTagName('tbody')[0], exportBtn = document.getElementById('export-btn');
-
-  // New filter elements
-  const startMonthInput = document.getElementById('start-month');
-  const endMonthInput = document.getElementById('end-month');
+  const startMonthSelect = document.getElementById('start-month-select');
+  const startYearSelect = document.getElementById('start-year-select');
+  const endMonthSelect = document.getElementById('end-month-select');
+  const endYearSelect = document.getElementById('end-year-select');
   const filterBtn = document.getElementById('filter-btn');
-
-  let filteredInvoices = []; // για να κρατάμε το αποτέλεσμα μετά το φιλτράρισμα
-
-  // Tabs Switch
+  let filteredInvoices = [];
   Object.entries(tabs).forEach(([k,btn])=>{
     btn.onclick=()=>switchTab(k);
   });
@@ -181,16 +285,12 @@
       applyFilterAndRender();
     }
   }
-
-  // LocalStorage
   function loadStorage(){
     invoices=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
   }
   function saveStorage(){
     localStorage.setItem(STORAGE_KEY,JSON.stringify(invoices));
   }
-
-  // QR scanning code
   startBtn.onclick = async ()=>{
     startBtn.disabled=true; msgStatus.textContent='Άνοιγμα κάμερας...';
     try{
@@ -231,7 +331,6 @@
       drawOutline(code.location,ctx); msgStatus.textContent='QR εντοπίστηκε!'; rawDataDiv.textContent=code.data;
       if(code.data!==lastQRData){
         lastQRData=code.data;
-        // Εισαγωγή στον πίνακα
         const now=(new Date()).toISOString().slice(0, 19).replace('T', ' ');
         let urlVal = (/^https?:\/\//.test(code.data.trim()) ? code.data.trim() : '');
         invoices.unshift({
@@ -249,57 +348,53 @@
     }
     setTimeout(scan,50);
   }
-
-  // Φιλτράρισμα ανά μήνα-έτος: Επιστρέφει τα invoices που είναι στο διάστημα [startMonth,endMonth]
-  function filterInvoicesByMonthRange(invoices, startMonth, endMonth){
-    // startMonth και endMonth είναι τιμές μορφής "YYYY-MM"
-    if(!startMonth && !endMonth) return invoices; // χωρίς φίλτρο
-
+  function getMonthYearString(monthSelect, yearSelect){
+    const m = monthSelect.value;
+    const y = yearSelect.value;
+    if(!m || !y) return '';
+    return y+'-'+(m.length===1 ? '0'+m : m);
+  }
+  function filterInvoicesByMonthRange(invoices, startMonthYear, endMonthYear){
+    if(!startMonthYear && !endMonthYear) return invoices;
     return invoices.filter(inv=>{
       const dateVal = inv.date ? inv.date.slice(0,7) : '';
       if(!dateVal) return false;
-      if(startMonth && dateVal < startMonth) return false;
-      if(endMonth && dateVal > endMonth) return false;
+      if(startMonthYear && dateVal < startMonthYear) return false;
+      if(endMonthYear && dateVal > endMonthYear) return false;
       return true;
     });
   }
-
   function renderTable(){
     if(activeTab!=='table') return;
     tableBody.innerHTML='';
     filteredInvoices.forEach((r,idx)=>{
       let tr=document.createElement('tr');
       const linkCell = r.link ?
-        `<a href="${r.link}" target="_blank" class="qrlink" title="${r.link}">Link</a>` : '';
+        `<a href="${r.link}" target="_blank" class="qrlink">${"Link"}</a>` : '';
       tr.innerHTML = `<td>${r.date||''}</td>
       <td>${linkCell}</td>
-      <td><input type="text" class="desc-input" data-idx="${idx}" value="${r.note? r.note.replace(/"/g,'&quot;'):''}" /></td>
+      <td>
+        <textarea class="desc-input" rows="2" data-idx="${idx}">${r.note ? r.note.replace(/"/g,'&quot;') : ''}</textarea>
+      </td>
       <td>
         <button class="delete-btn" data-idx="${idx}"><span class="material-symbols-rounded" style="vertical-align:middle;">delete</span></button>
       </td>`;
       tableBody.appendChild(tr);
     });
   }
-
-  // Ενημέρωση κατάστασης filteredInvoices και render
   function applyFilterAndRender(){
-    const startMonth = startMonthInput.value;
-    const endMonth = endMonthInput.value;
-    filteredInvoices = filterInvoicesByMonthRange(invoices, startMonth, endMonth);
+    const startMonthYear = getMonthYearString(startMonthSelect, startYearSelect);
+    const endMonthYear = getMonthYearString(endMonthSelect, endYearSelect);
+    filteredInvoices = filterInvoicesByMonthRange(invoices, startMonthYear, endMonthYear);
     renderTable();
   }
-
-  // Εκδήλωση πλοήγησης και διαδραστικών στοιχείων
   filterBtn.onclick = () => {
     applyFilterAndRender();
   };
-
-  // Notes edit/delete events
   document.addEventListener('input',function(e){
     if(!e.target.classList.contains('desc-input'))return;
     const idx=Number(e.target.dataset.idx), val=e.target.value;
     if(filteredInvoices[idx]){
-      // Ενημερώνουμε το αντικείμενο μέσα στο invoices (πρέπει να βρούμε το σωστό index)
       const inv = filteredInvoices[idx];
       const mainIdx = invoices.findIndex(i=>i.date===inv.date && i.raw===inv.raw && i.link===inv.link);
       if(mainIdx>=0){
@@ -310,20 +405,20 @@
     }
   });
   document.addEventListener('click',function(e){
-    if(!e.target.classList.contains('delete-btn'))return;
-    const idx=Number(e.target.dataset.idx);
-    if(filteredInvoices[idx]){
-      const inv = filteredInvoices[idx];
-      const mainIdx = invoices.findIndex(i=>i.date===inv.date && i.raw===inv.raw && i.link===inv.link);
-      if(mainIdx>=0){
-        invoices.splice(mainIdx,1);
-        saveStorage();
-        applyFilterAndRender();
+    if(e.target.closest('button.delete-btn')){
+      const btn = e.target.closest('button.delete-btn');
+      const idx=Number(btn.dataset.idx);
+      if(filteredInvoices[idx]){
+        const inv = filteredInvoices[idx];
+        const mainIdx = invoices.findIndex(i=>i.date===inv.date && i.raw===inv.raw && i.link===inv.link);
+        if(mainIdx>=0){
+          invoices.splice(mainIdx,1);
+          saveStorage();
+          applyFilterAndRender();
+        }
       }
     }
   });
-
-  // Export to CSV - μόνο τα φιλτραρισμένα
   exportBtn.onclick = function() {
     if(filteredInvoices.length===0){
       alert('Δεν υπάρχουν καταχωρίσεις για εξαγωγή με το τρέχον φίλτρο.');
@@ -331,24 +426,25 @@
     }
     let csv='Ημερομηνία,Link,Σημείωση,Raw QR\n';
     filteredInvoices.forEach(r=>{
-      let link = r.link || ''; let note = r.note ? r.note.replace(/"/g,'""') : '';
+      let link = r.link || '';
+      let note = r.note ? r.note.replace(/"/g,'""') : '';
       let raw = r.raw ? r.raw.replace(/"/g,'""') : '';
       csv+='"'+[r.date,link,note,raw].join('","')+'"\n';
     });
     const blob = new Blob([csv], {type: 'text/csv'});
     const url = URL.createObjectURL(blob);
-    const a=document.createElement('a'); a.href=url; a.download='timologia.csv'; a.click();
+    const a=document.createElement('a');
+    a.href=url;
+    a.download='timologia.csv';
+    a.click();
     setTimeout(()=>URL.revokeObjectURL(url), 300);
   };
-
-  // Init
   window.addEventListener('load',()=>{
     loadStorage();
-    
-    // Δεν ορίζουμε default τιμές για τα month inputs (μπορείς αν θέλεις να προσθέσουμε)
-    filteredInvoices = invoices.slice(); // όλα
-
-    renderTable();
+    filteredInvoices = invoices.slice();
+    startMonthSelect.value = '01'; startYearSelect.value = '2024';
+    endMonthSelect.value = '12'; endYearSelect.value = '2024';
+    applyFilterAndRender();
   });
 </script>
 </body>
