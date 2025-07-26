@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8" />
+  <title>Τα τιμολόγιά μου</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <!-- Google Icons (Material Symbols) -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,300,1,0">
+  <style>
+    body { font-family: system-ui,sans-serif; margin:0; background:#e8f1fb; color:#183049;}
+    h1 { text-align:center; font-weight:500; letter-spacing:1px; margin:25px 0 12px; color:#2062a9;}
+    .container { max-width:420px; margin:0 auto 32px; background:white; padding:22px 15px 26px; border-radius:20px;
+      box-shadow:0 4px 30px #2362a91c;}
+    .tabs { margin-top:14px; display:flex; border-bottom:2px solid #c1dafc; background:#f0f6fd;}
+    .tabs button {
+      flex:1; background:transparent; border:none; border-bottom:3px solid transparent; outline:none;
+      padding:12px 0 8px 0; font-size:1.3em; color:#185db0; display:flex; align-items:center; justify-content:center;
+      transition: border-color 0.2s, color 0.18s, background 0.18s; height:48px; position:relative; cursor:pointer;
+    }
+    .tabs button.active { border-color:#3987ec; color:#2563bb; background:linear-gradient(to bottom,#e3eeff 60%,#f0f6fd);}
+    .tabs button:hover:not(.active) { background:#eaf4fb; color:#245fae;}
+    .material-symbols-rounded { font-size:1.5em; }
+    .tabs button[title]:hover::after, .tabs button[title]:focus::after {
+      content: attr(title);
+      position: absolute; top:52px; left:50%; transform:translateX(-50%);
+      background:#185db0ea; color:white; font-size:0.96em; border-radius:7px; padding:4px 11px;
+      white-space: nowrap; pointer-events: none;
+      box-shadow:0 1px 6px #1b417777; z-index:80;
+      animation: fadeIn 0.25s;
+    }
+    @keyframes fadeIn {from{opacity:0;}to{opacity:1;}}
+    .section { display:none; }
+    .section.active { display:block; }
+    /* QR UI */
+    .video-wrap { position:relative; margin-top:15px; border-radius:15px; overflow:hidden; background:#6caef9; height:278px; }
+    video, canvas.qr-canvas { width:100%; height:100%; display:block; }
+    canvas.qr-canvas { position:absolute; top:0; left:0; pointer-events:none; z-index:2;}
+    button#start-scan { width:100%; padding:13px; border:none; border-radius:11px; background: #3987ec;
+      color:white; font-size:1.06em; cursor:pointer; margin-top:10px; font-weight:600;
+      box-shadow:0 2px 10px #3987ec1c; transition: background 0.25s;}
+    button#start-scan:hover:not(:disabled) { background: #185db0;}
+    button#start-scan:disabled { background:#aac4e7; cursor:not-allowed;}
+    .msg-status { text-align:center; margin:13px 0 3px 0; font-size:1em; color:#2362a9; min-height:36px; font-weight:500;}
+    .msg-ok { color: #279a7c; }
+    .msg-warn { color: #c53823; }
+    /* Table, fields */
+    table { width:100%; border-collapse:collapse; margin-top:18px; font-size:0.99em; background:#f5f8fd;}
+    th,td { padding:8px 4px; border-bottom:1px solid #d0e1fa; text-align:center; }
+    thead { background:#3178ce; color:white; }
+    tbody tr { background:#fafdff;}
+    tbody tr:nth-child(even) { background: #e7f1fa;}
+    tbody tr:hover { background:#e2ecff;}
+    .desc-input { width:92%; border:1px solid #b3d0f2; border-radius:7px; padding:2.5px 5px; font-size:1em; background:#fafbff;}
+    button.delete-btn,button.export-btn { background: #468ae5; color:white; padding:4px 9px; border:none; border-radius:7px; font-weight:500; font-size:1em; cursor:pointer; }
+    button.delete-btn:hover { background: #2262b6;}
+    button.export-btn { background:#209ecc; margin:12px 0 0 0;}
+    button.export-btn:hover { background:#1879a0;}
+    .raw-data { margin-top:13px; font-size:.95em; color:#2262b6; background:#e5eff7; padding:10px; border-radius:11px; max-height:85px; overflow-y:auto;}
+    a.qrlink { color:#3777b9; text-decoration:underline; cursor:pointer; font-weight:500; letter-spacing:.2px;}
+    @media (max-width:500px){ .container{margin:10px auto;} }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Τα τιμολόγιά μου</h1>
+  <div class="tabs">
+    <button id="tab-reader" class="active" title="Σάρωση QR">
+      <span class="material-symbols-rounded">qr_code_scanner</span>
+    </button>
+    <button id="tab-table" title="Δυναμικός Πίνακας">
+      <span class="material-symbols-rounded">table</span>
+    </button>
+  </div>
+
+  <!-- Tab 1: QR Reader -->
+  <div class="section active" id="section-reader">
+    <button id="start-scan">
+      <span class="material-symbols-rounded" style="vertical-align:middle;margin-right:3px;">camera_alt</span>
+      Έναρξη σάρωσης
+    </button>
+    <div class="video-wrap" style="display:none;">
+      <video id="preview" autoplay muted playsinline></video>
+      <canvas class="qr-canvas" id="qr-canvas"></canvas>
+    </div>
+    <div class="msg-status" id="msg-status"></div>
+    <div class="raw-data" id="raw-data" title="Raw data τελευταίου QR">Δεν έχει διαβαστεί ακόμη QR.</div>
+  </div>
+
+  <!-- Tab 2: Table -->
+  <div class="section" id="section-table">
+    <table id="main-table">
+      <thead>
+        <tr>
+          <th><span class="material-symbols-rounded" title="Ημερομηνία">calendar_month</span></th>
+          <th><span class="material-symbols-rounded" title="Link (QR)">link</span></th>
+          <th><span class="material-symbols-rounded" title="Σημείωση">edit_note</span></th>
+          <th><span class="material-symbols-rounded" title="Ενέργειες">delete</span></th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <button class="export-btn" id="export-btn">
+      <span class="material-symbols-rounded" style="vertical-align:-4px;">download</span> Export σε CSV
+    </button>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/jsqr"></script>
+<script>
+  // Data model & storage
+  const STORAGE_KEY = 'myinvoices_v1';
+  let invoices = [], scanning=false, stream=null, lastQRData='', activeTab='reader';
+
+  const tabs = {
+    reader: document.getElementById('tab-reader'),
+    table: document.getElementById('tab-table')
+  };
+  const sections = {
+    reader: document.getElementById('section-reader'),
+    table: document.getElementById('section-table')
+  };
+  const video = document.getElementById('preview'), videoWrap = document.querySelector('.video-wrap'), qrCanvas = document.getElementById('qr-canvas');
+  const startBtn = document.getElementById('start-scan'), msgStatus = document.getElementById('msg-status'), rawDataDiv = document.getElementById('raw-data');
+  const table = document.getElementById('main-table').getElementsByTagName('tbody')[0], exportBtn = document.getElementById('export-btn');
+
+  // Tabs Switch
+  Object.entries(tabs).forEach(([k,btn])=>{
+    btn.onclick=()=>switchTab(k);
+  });
+  function switchTab(tab){
+    activeTab=tab;
+    Object.entries(sections).forEach(([k,s])=>s.classList.toggle('active',tab===k));
+    Object.entries(tabs).forEach(([k,btn])=>btn.classList.toggle('active',tab===k));
+    if(tab!=='reader' && scanning) stopScanning();
+    renderTable();
+  }
+
+  // LocalStorage
+  function loadStorage(){
+    invoices=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
+  }
+  function saveStorage(){
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(invoices));
+  }
+
+  // QR
+  startBtn.onclick = async ()=>{
+    startBtn.disabled=true; msgStatus.textContent='Άνοιγμα κάμερας...';
+    try{
+      stream=await navigator.mediaDevices.getUserMedia({
+        video:{ facingMode:'environment', width:{ideal:1280}, height:{ideal:720} }
+      });
+      video.srcObject=stream; scanning=true; videoWrap.style.display='block'; scan();
+      startBtn.textContent='Σταμάτημα σάρωσης'; startBtn.disabled=false; startBtn.onclick=stopScanning;
+    }catch(e){
+      msgStatus.textContent='Δεν βρέθηκε κάμερα ή δεν δόθηκε άδεια.'; startBtn.disabled=false;
+    }
+  };
+  function stopScanning(){
+    scanning=false; if(stream)stream.getTracks().forEach(t=>t.stop());
+    videoWrap.style.display='none';msgStatus.textContent='Σάρωση σταματημένη.';lastQRData='';
+    startBtn.textContent='Έναρξη σάρωσης'; startBtn.onclick=startScan;
+  }
+  function startScan(){ location.reload(); }
+  function drawOutline(location,ctx){
+    if(!location)return; ctx.save(); ctx.beginPath();
+    ctx.moveTo(location.topLeftCorner.x,location.topLeftCorner.y);
+    ctx.lineTo(location.topRightCorner.x,location.topRightCorner.y);
+    ctx.lineTo(location.bottomRightCorner.x,location.bottomRightCorner.y);
+    ctx.lineTo(location.bottomLeftCorner.x,location.bottomLeftCorner.y);
+    ctx.closePath(); ctx.lineWidth=3; ctx.strokeStyle="#38ef7d"; ctx.shadowColor="#3fb5f8"; ctx.shadowBlur=7; ctx.stroke(); ctx.restore();
+  }
+  function scan(){
+    if(!scanning)return;
+    if(video.readyState!==video.HAVE_ENOUGH_DATA){ setTimeout(scan,50);return;}
+    qrCanvas.width=video.videoWidth||400; qrCanvas.height=video.videoHeight||300;
+    const ctx=qrCanvas.getContext('2d'); ctx.clearRect(0,0,qrCanvas.width,qrCanvas.height);
+    const tmpCanvas=document.createElement('canvas'); tmpCanvas.width=qrCanvas.width; tmpCanvas.height=qrCanvas.height;
+    const tmpCtx=tmpCanvas.getContext('2d');
+    tmpCtx.drawImage(video,0,0,tmpCanvas.width,tmpCanvas.height);
+    const imageData=tmpCtx.getImageData(0,0,tmpCanvas.width,tmpCanvas.height);
+    const code=jsQR(imageData.data,tmpCanvas.width,tmpCanvas.height);
+    if(code){
+      drawOutline(code.location,ctx); msgStatus.textContent='QR εντοπίστηκε!'; rawDataDiv.textContent=code.data;
+      if(code.data!==lastQRData){
+        lastQRData=code.data;
+        // Εισαγωγή στον πίνακα
+        const now=(new Date()).toISOString().slice(0, 19).replace('T', ' ');
+        let urlVal = (/^https?:\/\//.test(code.data.trim()) ? code.data.trim() : '');
+        invoices.unshift({
+          date: now,
+          link: urlVal,
+          raw: code.data,
+          note: ''
+        });
+        saveStorage(); renderTable();
+      }
+    }else{
+      ctx.clearRect(0,0,qrCanvas.width,qrCanvas.height);
+      msgStatus.textContent='Δεν βρέθηκε QR – Σάρωση...';
+    }
+    setTimeout(scan,50);
+  }
+
+  // Table & UI
+  function renderTable(){
+    if(activeTab!=='table')return;
+    table.innerHTML='';
+    invoices.forEach((r,idx)=>{
+      let tr=document.createElement('tr');
+      // δειχνει μόνο "Link" αλλά έχει το url σε tooltip και click ανοίγει το πραγματικό url
+      const linkCell = r.link ?
+        `<a href="${r.link}" target="_blank" class="qrlink" title="${r.link}">Link</a>` : '';
+      tr.innerHTML=`<td>${r.date||''}</td>
+      <td>${linkCell}</td>
+      <td><input type="text" class="desc-input" data-idx="${idx}" value="${r.note? r.note.replace(/"/g,'&quot;'):''}" /></td>
+      <td>
+        <button class="delete-btn" data-idx="${idx}"><span class="material-symbols-rounded" style="vertical-align:middle;">delete</span></button>
+      </td>`;
+      table.appendChild(tr);
+    });
+  }
+
+  // Notes edit/delete
+  document.addEventListener('input',function(e){
+    if(!e.target.classList.contains('desc-input'))return;
+    const idx=Number(e.target.dataset.idx), val=e.target.value;
+    if(invoices[idx]){invoices[idx].note=val;} saveStorage();
+  });
+  document.addEventListener('click',function(e){
+    if(!e.target.classList.contains('delete-btn'))return;
+    const idx=Number(e.target.dataset.idx); invoices.splice(idx,1);
+    saveStorage(); renderTable();
+  });
+
+  // Export to CSV
+  exportBtn.onclick = function() {
+    let csv='Ημερομηνία,Link,Σημείωση,Raw QR\n';
+    invoices.forEach(r=>{
+      let link = r.link || ''; let note = r.note ? r.note.replace(/"/g,'""') : '';
+      let raw = r.raw ? r.raw.replace(/"/g,'""') : '';
+      csv+='"'+[r.date,link,note,raw].join('","')+'"\n';
+    });
+    const blob = new Blob([csv], {type: 'text/csv'});
+    const url = URL.createObjectURL(blob);
+    const a=document.createElement('a'); a.href=url; a.download='timologia.csv'; a.click();
+    setTimeout(()=>URL.revokeObjectURL(url), 300);
+  };
+
+  // Init
+  window.addEventListener('load',()=>{ loadStorage(); renderTable(); });
+</script>
+</body>
+</html>
