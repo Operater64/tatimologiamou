@@ -44,7 +44,28 @@
     .msg-ok { color: #279a7c; }
     .msg-warn { color: #c53823; }
     /* Table, fields */
-    table { width:100%; border-collapse:collapse; margin-top:18px; font-size:0.99em; background:#f5f8fd;}
+    .filter-container {
+      display: flex; justify-content: center; gap: 10px; margin: 15px 0 5px 0; flex-wrap: wrap;
+    }
+    .filter-container label {
+      font-weight: 600; font-size: 0.9em; color: #185db0; align-self: center;
+    }
+    .filter-container input[type=month] {
+      border: 1px solid #b3d0f2; border-radius: 6px; padding: 5px 8px; font-size: 1em;
+      background:#fafbff;
+      color:#183049;
+      max-width: 140px;
+    }
+    .filter-container button {
+      background:#3987ec; border:none; color:white; font-weight:600; font-size:1em; padding: 7px 14px;
+      border-radius: 11px; cursor:pointer; box-shadow:0 2px 10px #3987ec1c;
+      transition: background 0.25s;
+    }
+    .filter-container button:hover {
+      background:#185db0;
+    }
+
+    table { width:100%; border-collapse:collapse; margin-top:8px; font-size:0.99em; background:#f5f8fd;}
     th,td { padding:8px 4px; border-bottom:1px solid #d0e1fa; text-align:center; }
     thead { background:#3178ce; color:white; }
     tbody tr { background:#fafdff;}
@@ -57,12 +78,20 @@
     button.export-btn:hover { background:#1879a0;}
     .raw-data { margin-top:13px; font-size:.95em; color:#2262b6; background:#e5eff7; padding:10px; border-radius:11px; max-height:85px; overflow-y:auto;}
     a.qrlink { color:#3777b9; text-decoration:underline; cursor:pointer; font-weight:500; letter-spacing:.2px;}
-    @media (max-width:500px){ .container{margin:10px auto;} }
+    @media (max-width:500px){ 
+      .container{margin:10px auto;} 
+      .filter-container {
+        flex-direction: column; align-items: stretch; gap: 10px;
+      }
+      .filter-container input[type=month], .filter-container button {
+        max-width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
 <div class="container">
-  <h1>Τα τιμολόγιά μου</h1>
+  <h1>Τα τιμολόγιά μου 2.0</h1>
   <div class="tabs">
     <button id="tab-reader" class="active" title="Σάρωση QR">
       <span class="material-symbols-rounded">qr_code_scanner</span>
@@ -88,6 +117,15 @@
 
   <!-- Tab 2: Table -->
   <div class="section" id="section-table">
+    <!-- Filter controls -->
+    <div class="filter-container">
+      <label for="start-month">Από:</label>
+      <input type="month" id="start-month" value="">
+      <label for="end-month">Έως:</label>
+      <input type="month" id="end-month" value="">
+      <button id="filter-btn" title="Εφαρμογή φίλτρου">Εφαρμογή φίλτρου</button>
+    </div>
+
     <table id="main-table">
       <thead>
         <tr>
@@ -110,6 +148,7 @@
   const STORAGE_KEY = 'myinvoices_v1';
   let invoices = [], scanning=false, stream=null, lastQRData='', activeTab='reader';
 
+  // Elements
   const tabs = {
     reader: document.getElementById('tab-reader'),
     table: document.getElementById('tab-table')
@@ -120,7 +159,14 @@
   };
   const video = document.getElementById('preview'), videoWrap = document.querySelector('.video-wrap'), qrCanvas = document.getElementById('qr-canvas');
   const startBtn = document.getElementById('start-scan'), msgStatus = document.getElementById('msg-status'), rawDataDiv = document.getElementById('raw-data');
-  const table = document.getElementById('main-table').getElementsByTagName('tbody')[0], exportBtn = document.getElementById('export-btn');
+  const tableBody = document.getElementById('main-table').getElementsByTagName('tbody')[0], exportBtn = document.getElementById('export-btn');
+
+  // New filter elements
+  const startMonthInput = document.getElementById('start-month');
+  const endMonthInput = document.getElementById('end-month');
+  const filterBtn = document.getElementById('filter-btn');
+
+  let filteredInvoices = []; // για να κρατάμε το αποτέλεσμα μετά το φιλτράρισμα
 
   // Tabs Switch
   Object.entries(tabs).forEach(([k,btn])=>{
@@ -131,7 +177,9 @@
     Object.entries(sections).forEach(([k,s])=>s.classList.toggle('active',tab===k));
     Object.entries(tabs).forEach(([k,btn])=>btn.classList.toggle('active',tab===k));
     if(tab!=='reader' && scanning) stopScanning();
-    renderTable();
+    if(tab==='table'){
+      applyFilterAndRender();
+    }
   }
 
   // LocalStorage
@@ -142,7 +190,7 @@
     localStorage.setItem(STORAGE_KEY,JSON.stringify(invoices));
   }
 
-  // QR
+  // QR scanning code
   startBtn.onclick = async ()=>{
     startBtn.disabled=true; msgStatus.textContent='Άνοιγμα κάμερας...';
     try{
@@ -192,7 +240,8 @@
           raw: code.data,
           note: ''
         });
-        saveStorage(); renderTable();
+        saveStorage();
+        if(activeTab==='table') applyFilterAndRender();
       }
     }else{
       ctx.clearRect(0,0,qrCanvas.width,qrCanvas.height);
@@ -201,41 +250,87 @@
     setTimeout(scan,50);
   }
 
-  // Table & UI
+  // Φιλτράρισμα ανά μήνα-έτος: Επιστρέφει τα invoices που είναι στο διάστημα [startMonth,endMonth]
+  function filterInvoicesByMonthRange(invoices, startMonth, endMonth){
+    // startMonth και endMonth είναι τιμές μορφής "YYYY-MM"
+    if(!startMonth && !endMonth) return invoices; // χωρίς φίλτρο
+
+    return invoices.filter(inv=>{
+      const dateVal = inv.date ? inv.date.slice(0,7) : '';
+      if(!dateVal) return false;
+      if(startMonth && dateVal < startMonth) return false;
+      if(endMonth && dateVal > endMonth) return false;
+      return true;
+    });
+  }
+
   function renderTable(){
-    if(activeTab!=='table')return;
-    table.innerHTML='';
-    invoices.forEach((r,idx)=>{
+    if(activeTab!=='table') return;
+    tableBody.innerHTML='';
+    filteredInvoices.forEach((r,idx)=>{
       let tr=document.createElement('tr');
-      // δειχνει μόνο "Link" αλλά έχει το url σε tooltip και click ανοίγει το πραγματικό url
       const linkCell = r.link ?
         `<a href="${r.link}" target="_blank" class="qrlink" title="${r.link}">Link</a>` : '';
-      tr.innerHTML=`<td>${r.date||''}</td>
+      tr.innerHTML = `<td>${r.date||''}</td>
       <td>${linkCell}</td>
       <td><input type="text" class="desc-input" data-idx="${idx}" value="${r.note? r.note.replace(/"/g,'&quot;'):''}" /></td>
       <td>
         <button class="delete-btn" data-idx="${idx}"><span class="material-symbols-rounded" style="vertical-align:middle;">delete</span></button>
       </td>`;
-      table.appendChild(tr);
+      tableBody.appendChild(tr);
     });
   }
 
-  // Notes edit/delete
+  // Ενημέρωση κατάστασης filteredInvoices και render
+  function applyFilterAndRender(){
+    const startMonth = startMonthInput.value;
+    const endMonth = endMonthInput.value;
+    filteredInvoices = filterInvoicesByMonthRange(invoices, startMonth, endMonth);
+    renderTable();
+  }
+
+  // Εκδήλωση πλοήγησης και διαδραστικών στοιχείων
+  filterBtn.onclick = () => {
+    applyFilterAndRender();
+  };
+
+  // Notes edit/delete events
   document.addEventListener('input',function(e){
     if(!e.target.classList.contains('desc-input'))return;
     const idx=Number(e.target.dataset.idx), val=e.target.value;
-    if(invoices[idx]){invoices[idx].note=val;} saveStorage();
+    if(filteredInvoices[idx]){
+      // Ενημερώνουμε το αντικείμενο μέσα στο invoices (πρέπει να βρούμε το σωστό index)
+      const inv = filteredInvoices[idx];
+      const mainIdx = invoices.findIndex(i=>i.date===inv.date && i.raw===inv.raw && i.link===inv.link);
+      if(mainIdx>=0){
+        invoices[mainIdx].note = val;
+        saveStorage();
+        applyFilterAndRender();
+      }
+    }
   });
   document.addEventListener('click',function(e){
     if(!e.target.classList.contains('delete-btn'))return;
-    const idx=Number(e.target.dataset.idx); invoices.splice(idx,1);
-    saveStorage(); renderTable();
+    const idx=Number(e.target.dataset.idx);
+    if(filteredInvoices[idx]){
+      const inv = filteredInvoices[idx];
+      const mainIdx = invoices.findIndex(i=>i.date===inv.date && i.raw===inv.raw && i.link===inv.link);
+      if(mainIdx>=0){
+        invoices.splice(mainIdx,1);
+        saveStorage();
+        applyFilterAndRender();
+      }
+    }
   });
 
-  // Export to CSV
+  // Export to CSV - μόνο τα φιλτραρισμένα
   exportBtn.onclick = function() {
+    if(filteredInvoices.length===0){
+      alert('Δεν υπάρχουν καταχωρίσεις για εξαγωγή με το τρέχον φίλτρο.');
+      return;
+    }
     let csv='Ημερομηνία,Link,Σημείωση,Raw QR\n';
-    invoices.forEach(r=>{
+    filteredInvoices.forEach(r=>{
       let link = r.link || ''; let note = r.note ? r.note.replace(/"/g,'""') : '';
       let raw = r.raw ? r.raw.replace(/"/g,'""') : '';
       csv+='"'+[r.date,link,note,raw].join('","')+'"\n';
@@ -247,7 +342,14 @@
   };
 
   // Init
-  window.addEventListener('load',()=>{ loadStorage(); renderTable(); });
+  window.addEventListener('load',()=>{
+    loadStorage();
+    
+    // Δεν ορίζουμε default τιμές για τα month inputs (μπορείς αν θέλεις να προσθέσουμε)
+    filteredInvoices = invoices.slice(); // όλα
+
+    renderTable();
+  });
 </script>
 </body>
 </html>
