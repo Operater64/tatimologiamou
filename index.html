@@ -8,121 +8,71 @@
   <style>
     body { font-family: system-ui,sans-serif; margin:0; background:#e8f1fb; color:#183049;}
     h1 { text-align:center; font-weight:500; letter-spacing:1px; margin:25px 0 12px; color:#2062a9;}
-    .container {
-      max-width:420px; margin:0 auto 32px; background:white; padding:22px 15px 26px;
-      border-radius:20px; box-shadow:0 4px 30px #2362a91c;
-    }
-    .tabs {
-      margin-top:14px; display:flex; border-bottom:2px solid #c1dafc; background:#f0f6fd;
-    }
-    .tabs button {
-      flex:1; background:transparent; border:none; border-bottom:3px solid transparent;
-      outline:none; padding:12px 0 8px 0; font-size:1.3em; color:#185db0;
-      display:flex; align-items:center; justify-content:center;
-      transition: border-color 0.2s, color 0.18s, background 0.18s;
-      height:48px; position:relative; cursor:pointer;
-    }
-    .tabs button.active {
-      border-color:#3987ec; color:#2563bb;
-      background:linear-gradient(to bottom,#e3eeff 60%,#f0f6fd);
-    }
+    .container { max-width:420px; margin:0 auto 32px; background:white; padding:22px 15px 26px; border-radius:20px; box-shadow:0 4px 30px #2362a91c;}
+    .tabs { margin-top:14px; display:flex; border-bottom:2px solid #c1dafc; background:#f0f6fd;}
+    .tabs button { flex:1; background:transparent; border:none; border-bottom:3px solid transparent; outline:none; padding:12px 0 8px 0; font-size:1.3em; color:#185db0; display:flex; align-items:center; justify-content:center; transition: border-color 0.2s, color 0.18s, background 0.18s; height:48px; position:relative; cursor:pointer;}
+    .tabs button.active { border-color:#3987ec; color:#2563bb; background:linear-gradient(to bottom,#e3eeff 60%,#f0f6fd);}
     .tabs button:hover:not(.active) { background:#eaf4fb; color:#245fae;}
-    .material-symbols-rounded { font-size:1.5em; }
+    .material-symbols-rounded { font-size:1.45em;}
     .section { display:none; }
     .section.active { display:block; }
-    .video-wrap {
-      position:relative; margin-top:15px; border-radius:15px; overflow:hidden; background:#6caef9; height:278px;
-    }
-    video, canvas.qr-canvas { width:100%; height:100%; display:block; }
+    .video-wrap { position:relative; margin-top:15px; border-radius:15px; overflow:hidden; background:#6caef9; height:278px; }
+    video, canvas.qr-canvas { width:100%; height:100%; display:block;}
     canvas.qr-canvas { position:absolute; top:0; left:0; pointer-events:none; z-index:2;}
-    button#start-scan {
-      width:100%; padding:13px; border:none; border-radius:11px;
-      background:#3987ec; color:white; font-size:1.06em; cursor:pointer; margin-top:10px; font-weight:600;
-      box-shadow:0 2px 10px #3987ec1c; transition: background 0.25s;
-    }
-    button#start-scan:hover:not(:disabled) { background:#185db0;}
+    button#start-scan { width:100%; padding:13px; border:none; border-radius:11px; background: #3987ec; color:white; font-size:1.06em; cursor:pointer; margin-top:10px; font-weight:600; box-shadow:0 2px 10px #3987ec1c; transition: background 0.25s;}
+    button#start-scan:hover:not(:disabled) { background: #185db0;}
     button#start-scan:disabled { background:#aac4e7; cursor:not-allowed;}
-    .msg-status {
-      text-align:center; margin:13px 0 3px 0; font-size:1em; color:#2362a9; min-height:36px; font-weight:500;
-    }
+    .msg-status { text-align:center; margin:13px 0 3px 0; font-size:1em; color:#2362a9; min-height:36px; font-weight:500;}
     .msg-ok { color: #279a7c; }
     .msg-warn { color: #c53823; }
-    .filter-short {
-      display: flex; justify-content: center; gap: 6px; margin: 15px 0 6px 0; flex-wrap: wrap; align-items: center;
+    .top-actions {
+      display: flex; gap: 9px; align-items: center; justify-content: flex-end; margin: 8px 0 3px 0;
     }
-    .filter-short label {
-      font-weight: 600; font-size: 0.9em; color: #185db0;
-      user-select:none; display: flex; align-items: center; gap: 4px;
+    .icon-btn {
+      background:#e8f1fb; border:none; border-radius:50%; width:36px; height:36px; display:flex; align-items:center; justify-content:center;
+      box-shadow:0 1px 8px #3987ec17;
+      cursor:pointer; transition: background 0.22s, color 0.15s;
+      color: #1d5aa7; font-size:1.5em; padding:0;
+      position:relative;
     }
-    .filter-short select {
-      border: 1px solid #b3d0f2; border-radius: 6px; padding: 3px 6px; font-size: 0.9em;
-      background: #fafbff; color: #183049; height: 28px; min-width: 50px;
-      cursor: pointer; -webkit-appearance: none; -moz-appearance: none; appearance: none;
-    }
-    .filter-short button {
-      background:#3987ec; border:none; color:white; font-weight:600; font-size:0.95em;
-      padding: 6px 12px; border-radius: 11px; cursor:pointer;
-      box-shadow:0 2px 10px #3987ec1c; transition: background 0.25s;
-      height: 30px; user-select:none;
-    }
+    .icon-btn:active, .icon-btn:focus, .icon-btn:hover { background:#cfdcf5; color:#265eb0;}
+    .icon-btn input[type="file"] { display:none; }
+    .import-status { font-size:0.90em; color:#3987ec; font-weight:500; }
+    .filter-short { display: flex; justify-content: center; gap: 6px; margin: 15px 0 6px 0; flex-wrap: wrap; align-items: center;}
+    .filter-short label { font-weight: 600; font-size: 0.9em; color: #185db0; user-select:none; display: flex; align-items: center; gap: 4px;}
+    .filter-short select { border: 1px solid #b3d0f2; border-radius: 6px; padding: 3px 6px; font-size: 0.9em; background: #fafbff; color: #183049; height: 28px; min-width: 50px; cursor: pointer; -webkit-appearance: none; -moz-appearance: none; appearance: none;}
+    .filter-short button { background:#3987ec; border:none; color:white; font-weight:600; font-size:0.95em; padding: 6px 12px; border-radius: 11px; cursor:pointer; box-shadow:0 2px 10px #3987ec1c; transition: background 0.25s; height: 30px; user-select:none;}
     .filter-short button:hover { background:#185db0;}
     .search-bar { margin: 0 0 8px 0;}
-    .search-bar input[type="search"] {
-      width: 99%; border-radius: 7px; border: 1px solid #b3d0f2; padding: 7px 8px;
-      font-size: 1em; color: #183049; box-sizing: border-box;
-    }
-    table {
-      width:100%; border-collapse:collapse; margin-top:8px; font-size:0.99em; background:#f5f8fd;
-    }
-    th, td {
-      padding:8px 4px; border-bottom:1px solid #d0e1fa; text-align:center; vertical-align: middle;
-    }
+    .search-bar input[type="search"] { width: 99%; border-radius: 7px; border: 1px solid #b3d0f2; padding: 7px 8px; font-size: 1em; color: #183049; box-sizing: border-box;}
+    table { width:100%; border-collapse:collapse; margin-top:8px; font-size:0.99em; background:#f5f8fd; }
+    th, td { padding:8px 4px; border-bottom:1px solid #d0e1fa; text-align:center; vertical-align: middle;}
     thead { background:#3178ce; color:white; }
     tbody tr { background:#fafdff;}
     tbody tr:nth-child(even) { background: #e7f1fa;}
     tbody tr:hover { background:#e2ecff;}
-    .editable-note {
-      width: 99%; min-width: 100px; max-width: 99vw;
-      min-height: 34px; max-height: 70px;
-      padding: 5px 7px; border: 1px solid #b3d0f2; border-radius: 7px; background: #fafbff;
-      font-size: 1.08em; font-family: inherit; resize: none; box-sizing: border-box;
-      overflow-y: auto; transition: box-shadow 0.15s; outline: none; cursor: text;
-      white-space: pre-wrap; word-wrap: break-word;
-    }
+    .date-input { width: 110px; min-width: 78px; border: 1px solid #b3d0f2; border-radius: 6px; padding: 4px 6px; font-size: 1em; background: #fafbff; color: #183049; box-sizing: border-box; }
+    @media (max-width:500px){ .date-input { width:99%; min-width:78px; } }
+    .editable-note { width: 99%; min-width:100px; max-width:99vw; min-height: 34px; max-height: 70px; padding: 5px 7px; border: 1px solid #b3d0f2; border-radius: 7px; background: #fafbff; font-size: 1.08em; font-family: inherit; resize: none; box-sizing: border-box; overflow-y: auto; transition: box-shadow 0.15s; outline: none; cursor: text; white-space: pre-wrap; word-wrap: break-word;}
     .editable-note:focus { box-shadow: 0 0 0 2px #3178ce44; outline: none;}
-    button.delete-btn, button.export-btn {
-      background: #468ae5; color:white; padding:4px 9px; border:none; border-radius:7px;
-      font-weight:500; font-size:1em; cursor:pointer;
-    }
-    button.delete-btn:hover {background: #2262b6;}
-    button.export-btn { background:#209ecc; margin:12px 0 0 0;}
-    button.export-btn:hover { background:#1879a0;}
-    .raw-data {
-      margin-top:13px; font-size:.95em; color:#2262b6;
-      background:#e5eff7; padding:10px; border-radius:11px;
-      max-height:85px; overflow-y:auto;
-    }
-    a.qrlink {
-      color:#3777b9; text-decoration:underline; cursor:pointer;
-      font-weight:500; letter-spacing:.2px;
-    }
+    button.delete-btn { background: #468ae5; color:white; padding:4px 9px; border:none; border-radius:7px; font-weight:500; font-size:1em; cursor:pointer;}
+    button.delete-btn:hover { background: #2262b6;}
+    .raw-data { margin-top:13px; font-size:.95em; color:#2262b6; background:#e5eff7; padding:10px; border-radius:11px; max-height:85px; overflow-y:auto;}
+    a.qrlink { color:#3777b9; text-decoration:underline; cursor:pointer; font-weight:500; letter-spacing:.2px;}
     @media (max-width:500px){
       .container {margin:10px auto;}
       .filter-short { flex-direction: column; align-items: stretch; gap: 8px;}
-      .filter-short select, .filter-short button, .search-bar input[type="search"] {
-        max-width: 100%; width: 100%; height: auto;
-      }
-      .filter-short label { justify-content: flex-start; }
+      .filter-short select, .filter-short button, .search-bar input[type="search"] { max-width: 100%; width: 100%; height: auto;}
+      .top-actions { justify-content: flex-start; gap: 7px;}
+      .icon-btn { width:32px; height:32px; font-size:1.1em; }
+      .filter-short label { justify-content: flex-start;}
     }
-    .no-results {
-      color: #c53823; text-align: center; font-size: 1em; font-weight: 500;
-      padding: 14px 0; background: #f9eeea; border-radius: 8px;
-    }
+    .no-results { color: #c53823; text-align: center; font-size: 1em; font-weight: 500; padding: 14px 0; background: #f9eeea; border-radius: 8px; }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Τα τιμολόγιά μου 3.2</h1>
+    <h1>Τα τιμολόγιά μου 3.3</h1>
     <div class="tabs">
       <button id="tab-reader" class="active">
         <span class="material-symbols-rounded">qr_code_scanner</span>
@@ -132,7 +82,6 @@
       </button>
     </div>
 
-    <!-- Tab 1: QR Reader -->
     <div class="section active" id="section-reader">
       <button id="start-scan">
         <span class="material-symbols-rounded" style="vertical-align: middle; margin-right: 3px;">camera_alt</span>
@@ -148,7 +97,16 @@
 
     <!-- Tab 2: Table -->
     <div class="section" id="section-table">
-      <!-- Φίλτρο Διαστήματος -->
+      <div class="top-actions">
+        <button class="icon-btn" id="import-btn" aria-label="Import CSV">
+          <span class="material-symbols-rounded">upload</span>
+          <input type="file" id="import-csv" accept=".csv,text/csv"/>
+        </button>
+        <button class="icon-btn" id="export-btn" aria-label="Export CSV">
+          <span class="material-symbols-rounded">download</span>
+        </button>
+        <span id="import-status" class="import-status"></span>
+      </div>
       <div class="filter-short" aria-label="Φίλτρο επιλογής διαστήματος">
         <label for="start-month-select">Από
           <select id="start-month-select">
@@ -163,12 +121,22 @@
             <option value="">--</option><option value="01">Ιαν</option><option value="02">Φεβ</option><option value="03">Μαρ</option><option value="04">Απρ</option><option value="05">Μάι</option><option value="06">Ιουν</option><option value="07">Ιουλ</option><option value="08">Αυγ</option><option value="09">Σεπ</option><option value="10">Οκτ</option><option value="11">Νοε</option><option value="12">Δεκ</option>
           </select> /
           <select id="end-year-select">
-            <option value="">--</option><option value="2021">2021</option><option value="2022">2022</option><option value="2023">2023</option><option value="2024" selected>2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option><option value="2031">2031</option><option value="2032">2032</option><option value="2033">2033</option><option value="2034">2034</option><option value="2035">2035</option>
+            <option value="">--</option>
+            <option value="2025" selected>2025</option>
+            <option value="2026">2026</option>
+            <option value="2027">2027</option>
+            <option value="2028">2028</option>
+            <option value="2029">2029</option>
+            <option value="2030">2030</option>
+            <option value="2031">2031</option>
+            <option value="2032">2032</option>
+            <option value="2033">2033</option>
+            <option value="2034">2034</option>
+            <option value="2035">2035</option>
           </select>
         </label>
         <button id="filter-btn" aria-label="Εφαρμογή φίλτρου">Φίλτρο</button>
       </div>
-      <!-- Αναζήτηση -->
       <div class="search-bar">
         <input type="search" id="search-text" placeholder="Αναζήτηση στη σημείωση..." aria-label="Αναζήτηση στη σημείωση" />
       </div>
@@ -183,10 +151,6 @@
         </thead>
         <tbody></tbody>
       </table>
-      <button class="export-btn" id="export-btn">
-        <span class="material-symbols-rounded" style="vertical-align: -4px">download</span>
-        Export σε CSV
-      </button>
     </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/jsqr"></script>
@@ -197,7 +161,6 @@
       stream = null,
       lastQRData = "",
       activeTab = "reader";
-
     const tabs = {
       reader: document.getElementById("tab-reader"),
       table: document.getElementById("tab-table"),
@@ -212,11 +175,11 @@
     const startBtn = document.getElementById("start-scan"),
       msgStatus = document.getElementById("msg-status"),
       rawDataDiv = document.getElementById("raw-data");
-    const tableBody = document
-      .getElementById("main-table")
-      .getElementsByTagName("tbody")[0];
+    const tableBody = document.getElementById("main-table").getElementsByTagName("tbody")[0];
     const exportBtn = document.getElementById("export-btn");
-
+    const importBtn = document.getElementById("import-btn");
+    const importCsvBtn = document.getElementById("import-csv");
+    const importStatus = document.getElementById("import-status");
     const startMonthSelect = document.getElementById("start-month-select");
     const startYearSelect = document.getElementById("start-year-select");
     const endMonthSelect = document.getElementById("end-month-select");
@@ -269,9 +232,7 @@
       startBtn.textContent = "Έναρξη σάρωσης";
       startBtn.onclick = startScan;
     }
-    function startScan() {
-      location.reload();
-    }
+    function startScan() { location.reload(); }
     function drawOutline(location, ctx) {
       if (!location) return;
       ctx.save();
@@ -311,10 +272,11 @@
         rawDataDiv.textContent = code.data;
         if (code.data !== lastQRData) {
           lastQRData = code.data;
-          const now = new Date().toISOString().slice(0, 19).replace("T", " ");
+          const now = new Date();
+          const today = now.toISOString().slice(0,10);
           let urlVal = /^https?:\/\//.test(code.data.trim()) ? code.data.trim() : "";
           invoices.unshift({
-            date: now,
+            date: today,
             link: urlVal,
             raw: code.data,
             note: "",
@@ -364,7 +326,10 @@
       filteredInvoices.forEach((r, idx) => {
         const tr = document.createElement("tr");
         const linkCell = r.link ? `<a href="${r.link}" target="_blank" class="qrlink">Link</a>` : "";
-        tr.innerHTML = `<td>${r.date || ""}</td>
+        tr.innerHTML = `
+          <td>
+            <input type="date" class="date-input" data-idx="${idx}" value="${(r.date||"").slice(0,10)}" />
+          </td>
           <td>${linkCell}</td>
           <td>
             <div contenteditable="true" class="editable-note" data-idx="${idx}">${escapeHTML(r.note || "")}</div>
@@ -395,17 +360,35 @@
     filterBtn.onclick = () => { applyFilterAndRender(); };
     searchInput.addEventListener("input", () => { applyFilterAndRender(); });
     document.addEventListener("input", function (e) {
-      if (!e.target.classList.contains("editable-note")) return;
-      const idx = Number(e.target.dataset.idx);
-      const val = e.target.innerText;
-      if (filteredInvoices[idx]) {
-        const inv = filteredInvoices[idx];
-        const mainIdx = invoices.findIndex(
-          (i) => i.date === inv.date && i.raw === inv.raw && i.link === inv.link
-        );
-        if (mainIdx >= 0) {
-          invoices[mainIdx].note = val;
-          saveStorage();
+      if (e.target.classList.contains("editable-note")) {
+        const idx = Number(e.target.dataset.idx);
+        const val = e.target.innerText;
+        if (filteredInvoices[idx]) {
+          const inv = filteredInvoices[idx];
+          const mainIdx = invoices.findIndex(
+            (i) => i.date === inv.date && i.raw === inv.raw && i.link === inv.link
+          );
+          if (mainIdx >= 0) {
+            invoices[mainIdx].note = val;
+            saveStorage();
+          }
+        }
+      }
+    });
+    document.addEventListener("change", function (e) {
+      if (e.target.classList.contains("date-input")) {
+        const idx = Number(e.target.dataset.idx);
+        const newDate = e.target.value;
+        if (filteredInvoices[idx] && newDate) {
+          const inv = filteredInvoices[idx];
+          const mainIdx = invoices.findIndex(
+            (i) => i.date === inv.date && i.raw === inv.raw && i.link === inv.link
+          );
+          if (mainIdx >= 0) {
+            invoices[mainIdx].date = newDate; // ΜΟΝΟ YYYY-MM-DD
+            saveStorage();
+            applyFilterAndRender();
+          }
         }
       }
     });
@@ -426,6 +409,8 @@
         }
       }
     });
+
+    // EXPORT CSV
     exportBtn.onclick = function () {
       if (filteredInvoices.length === 0) {
         alert("Δεν υπάρχουν καταχωρίσεις για εξαγωγή με το τρέχον φίλτρο.");
@@ -446,13 +431,50 @@
       a.click();
       setTimeout(() => URL.revokeObjectURL(url), 300);
     };
+
+    // IMPORT CSV
+    importBtn.onclick = function() { importCsvBtn.click(); };
+    importCsvBtn.addEventListener("change", function(e) {
+      const file = e.target.files[0];
+      importStatus.textContent = "";
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        const text = ev.target.result;
+        let countAdd = 0, countDup = 0, countErr = 0;
+        let lines = text.split(/\r?\n/).filter(l=>l.trim());
+        if (lines[0].toLowerCase().startsWith("ημερομηνία")) lines.shift();
+        lines.forEach(line => {
+          let m = line.match(/^"(.+?)","(.*?)","(.*?)","(.*?)"$/);
+          let cols;
+          if(m) cols = m.slice(1,5);
+          else cols = line.split(",").map(s=>s.replace(/^"|"$/g,'').replace(/""/g,'"'));
+          if(cols.length < 4) { countErr++; return; }
+          let [date, link, note, raw] = cols.map(x=>x.trim());
+          if (!date.match(/^\d{4}-\d{2}-\d{2}$/)) { countErr++; return; }
+          let isDup = invoices.some(inv => inv.date===date && inv.link===link && inv.note===note && inv.raw===raw );
+          if (isDup) { countDup++; return; }
+          invoices.push({date, link, note, raw});
+          countAdd++;
+        });
+        saveStorage();
+        applyFilterAndRender();
+        importStatus.textContent = countAdd>0
+          ? `Εισήχθησαν ${countAdd} εγγραφές.` + (countDup>0?" ("+countDup+" διπλότυπα)":"") + (countErr>0?" - Αποτυχία σε "+countErr+" γραμμές.":"")
+          : (countDup>0?`Όλες οι εγγραφές ήταν διπλότυπες.`:"Δεν προστέθηκε καμία εγγραφή.");
+        setTimeout(()=>{importStatus.textContent="";},4500);
+        importCsvBtn.value="";
+      };
+      reader.readAsText(file,'UTF-8');
+    });
+
     window.addEventListener("load", () => {
       loadStorage();
       filteredInvoices = invoices.slice();
       startMonthSelect.value = "01";
-      startYearSelect.value = "2021";
+      startYearSelect.value = "2024";
       endMonthSelect.value = "12";
-      endYearSelect.value = "2025";
+      endYearSelect.value = "2025"; // <-- Προεπιλεγμένο έτος "Έως"
       applyFilterAndRender();
     });
   </script>
